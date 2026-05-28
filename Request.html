@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>resQ — Find Help</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1E40AF;
+  --primary-light: #3B82F6;
+  --primary-gradient: linear-gradient(135deg, #1E40AF, #3B82F6);
+  --accent: #0284C7;
+  --accent-light: #E0F2FE;
+  
+  --bg: #F8FAFC;
+  --bg2: #F1F5F9;
+  --sur: #FFFFFF;
+  --card: #FFFFFF;
+  --card2: #F8FAFC;
+  --bdr: #E2E8F0;
+  --bdr2: #CBD5E1;
+  
+  --txt: #0F172A;
+  --txt2: #475569;
+  --txt3: #94A3B8;
+  
+  --shd: rgba(15, 23, 42, 0.05);
+  --shd-heavy: rgba(15, 23, 42, 0.1);
+  --tog-track: #E2E8F0;
+  --tog-knob: #FFFFFF;
+}
+
+[data-theme="dark"] {
+  --bg: #0B0F19;
+  --bg2: #111827;
+  --sur: #1F2937;
+  --card: #1F2937;
+  --card2: #111827;
+  --bdr: #374151;
+  --bdr2: #4B5563;
+  
+  --txt: #F8FAFC;
+  --txt2: #9CA3AF;
+  --txt3: #6B7280;
+  
+  --accent-light: rgba(2, 132, 199, 0.15);
+  --shd: rgba(0, 0, 0, 0.4);
+  --shd-heavy: rgba(0, 0, 0, 0.6);
+  --tog-track: #374151;
+  --tog-knob: #F8FAFC;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; background: #0F172A; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; transition: background 0.4s, color 0.4s; }
+
+.frame { width: 100%; max-width: 430px; min-height: 100vh; position: relative; background: var(--bg); transition: background 0.4s; overflow: hidden; padding-bottom: 100px; }
+
+header { position: sticky; top: 0; z-index: 50; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--bdr); transition: background 0.4s, border-color 0.4s; }
+[data-theme="dark"] header { background: rgba(11, 15, 25, 0.85); }
+
+.logo-row { display: flex; align-items: center; gap: 8px; }
+.logo-drop { width: 32px; height: 32px; background: var(--primary-gradient); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); }
+.logo-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; color: var(--txt); letter-spacing: -0.5px; transition: color 0.4s; }
+.logo-text b { color: var(--primary-light); font-weight: 800; }
+
+.tog-wrap { display: flex; align-items: center; gap: 8px; }
+.tog-label { font-size: 11px; font-weight: 600; color: var(--txt2); letter-spacing: 0.3px; }
+.tog { width: 48px; height: 26px; border-radius: 30px; background: var(--tog-track); border: 1px solid var(--bdr); cursor: pointer; position: relative; transition: background 0.3s; flex-shrink: 0; }
+.tok { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--tog-knob); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+[data-theme="dark"] .tok { transform: translateX(22px); }
+
+.hero { padding: 24px 20px 16px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--primary-light); margin-bottom: 8px; }
+.hero-eyebrow-line { width: 16px; height: 2px; background: var(--primary-light); border-radius: 2px; }
+.hero-title { font-size: 28px; font-weight: 800; color: var(--txt); line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 8px; }
+.hero-title em { color: var(--primary-light); font-style: normal; }
+.hero-sub { font-size: 13px; color: var(--txt2); line-height: 1.5; }
+
+.mode-toggle-bar { margin: 0 20px 20px; padding: 4px; background: var(--bg2); border-radius: 12px; display: flex; gap: 4px; }
+.mode-tab { flex: 1; padding: 10px 4px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.25s; text-align: center; color: var(--txt2); }
+.mode-tab.active-emrg { background: var(--primary-gradient); color: #ffffff; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25); }
+.mode-tab.active-norm { background: var(--sur); color: var(--primary); box-shadow: 0 4px 10px var(--shd); border: 1px solid var(--bdr); }
+[data-theme="dark"] .mode-tab.active-norm { background: var(--primary-gradient); color: #fff; }
+
+.warn-pill { margin: 0 20px 20px; padding: 12px 14px; border-radius: 10px; font-size: 12px; font-weight: 500; line-height: 1.4; display: none; }
+.warn-pill.emrg-warn { background: rgba(30, 64, 175, 0.06); border: 1px solid rgba(30, 64, 175, 0.15); color: var(--primary-light); }
+.warn-pill.norm-warn { background: var(--accent-light); border: 1px solid var(--bdr); color: var(--accent); }
+
+.section-head { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 12px; }
+.sh-left h3 { font-size: 15px; font-weight: 700; color: var(--txt); }
+.sh-left p { font-size: 12px; color: var(--txt2); margin-top: 1px; }
+.sh-badge { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px; }
+.sh-badge.emrg { background: var(--primary-gradient); color: #ffffff; }
+.sh-badge.norm { background: var(--accent-light); color: var(--accent); }
+
+.donor-card, .bank-card { background: var(--sur); border: 1px solid var(--bdr); border-radius: 14px; padding: 16px; margin: 0 20px 12px; cursor: pointer; transition: all 0.25s; box-shadow: 0 2px 4px var(--shd); }
+.donor-card:hover, .bank-card:hover { transform: translateY(-2px); border-color: var(--bdr2); box-shadow: 0 6px 16px var(--shd-heavy); }
+
+.dc-top, .bc-top { display: flex; align-items: flex-start; gap: 12px; }
+.av-wrap { position: relative; flex-shrink: 0; }
+.av, .bc-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; background: var(--primary-gradient); }
+.bc-icon { background: var(--accent-light); color: var(--accent); font-size: 18px; }
+.av-blood { position: absolute; bottom: -4px; right: -4px; font-size: 9px; font-weight: 800; color: #fff; padding: 1px 4px; border-radius: 4px; background: var(--accent); border: 2px solid var(--sur); }
+.online-ring { position: absolute; top: -2px; left: -2px; width: 10px; height: 10px; background: #10B981; border-radius: 50%; border: 2px solid var(--sur); }
+
+.dc-info, .bc-info { flex: 1; min-width: 0; }
+.dc-name, .bc-name { font-size: 15px; font-weight: 700; color: var(--txt); }
+.dc-loc, .bc-addr { font-size: 12px; color: var(--txt2); margin-top: 2px; }
+.dc-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.tag { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--bdr); background: var(--bg2); color: var(--txt2); }
+.tag-g { color: #10B981; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.15); }
+.tag-y { color: #F59E0B; background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.15); }
+
+.dc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.blood-pill { font-size: 13px; font-weight: 700; color: var(--primary); padding: 4px 8px; border-radius: 6px; background: rgba(30, 64, 175, 0.08); }
+.dist-txt, .bc-dist { font-size: 11px; font-weight: 600; color: var(--txt3); }
+.bc-dist { color: var(--primary-light); font-size: 12px; font-weight: 700; margin-top: 2px; }
+
+.bc-status { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
+.open { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.closed { background: var(--bg2); color: var(--txt3); }
+
+.dc-bottom, .bc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--bdr); }
+.dc-stats { display: flex; gap: 16px; }
+.stat-n { font-size: 14px; font-weight: 700; color: var(--txt); }
+.stat-l { font-size: 9px; color: var(--txt3); font-weight: 700; letter-spacing: 0.5px; }
+
+.call-btn, .bank-call-btn { display: flex; align-items: center; gap: 4px; background: var(--primary-gradient); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+.bank-call-btn { background: var(--bg2); color: var(--txt); border: 1px solid var(--bdr); }
+.call-btn:hover, .bank-call-btn:hover { opacity: 0.9; }
+
+.loc-bar { padding: 0 20px 16px; }
+.loc-wrap { display: flex; align-items: center; gap: 8px; background: var(--sur); border: 1.5px solid var(--bdr); border-radius: 10px; padding: 10px 12px; }
+.loc-inp { flex: 1; background: none; border: none; outline: none; font-size: 13px; font-weight: 600; color: var(--txt); font-family: inherit; }
+.loc-inp::placeholder { color: var(--txt3); }
+.srch-btn { background: var(--primary-gradient); color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+.no-result { text-align: center; padding: 48px 20px; }
+.no-ico { font-size: 40px; display: block; margin-bottom: 8px; }
+.no-t { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 4px; }
+.no-s { font-size: 13px; color: var(--txt2); }
+
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(12px); color: #fff; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; z-index: 9999; opacity: 0; transition: all 0.3s; white-space: nowrap; pointer-events: none; background: var(--txt); box-shadow: 0 4px 12px var(--shd-heavy); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Bottom Navigation */
+.bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; background: var(--sur); display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 20px; border-top: 1px solid var(--bdr); z-index: 100; left: 50%; transform: translateX(-50%); }
+.nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--txt3); gap: 4px; font-size: 10px; font-weight: 700; flex: 1; }
+.nav-item.active, .nav-item:hover { color: var(--primary-light); }
+.nav-item svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.nav-fab-wrapper { position: relative; width: 64px; display: flex; justify-content: center; }
+.nav-fab-bg { position: absolute; top: -28px; width: 56px; height: 56px; background: var(--sur); border-radius: 50%; z-index: 1; border-top: 1px solid var(--bdr); }
+.nav-fab { position: absolute; top: -22px; width: 46px; height: 46px; border-radius: 50%; background: var(--primary-gradient); display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); cursor: pointer; color: white; z-index: 2; border: none; }
+.nav-fab svg { width: 20px; height: 20px; fill: currentColor; }
+
+/* Modal Styles */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal { background: var(--sur); width: 100%; max-width: 430px; border-radius: 20px 20px 0 0; padding: 20px 20px 28px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); max-height: 80vh; overflow-y: auto; }
+.modal-overlay.show .modal { transform: translateY(0); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-title { font-size: 17px; font-weight: 700; color: var(--txt); }
+.modal-close { background: var(--bg2); border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; color: var(--txt2); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+.form-group { margin-bottom: 12px; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+.form-label { display: block; font-size: 11px; font-weight: 700; color: var(--txt2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+.form-input, .form-select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid var(--bdr); background: var(--bg2); color: var(--txt); font-family: inherit; font-size: 13px; }
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-light); background: var(--sur); }
+
+.btn-primary { width: 100%; background: var(--primary-gradient); color: white; padding: 12px; border-radius: 10px; font-weight: 700; border: none; font-size: 14px; cursor: pointer; margin-top: 8px; font-family: inherit; }
+.modal-call-wrap { display: flex; justify-content: center; margin-top: 12px; }
+
+.file-drop-area { border: 2px dashed var(--bdr); border-radius: 8px; padding: 14px; text-align: center; position: relative; background: var(--bg2); }
+.file-ico { font-size: 18px; display: block; margin-bottom: 2px; }
+.file-msg { font-size: 11px; color: var(--txt2); font-weight: 600; }
+.file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.success-icon { font-size: 48px; margin-bottom: 8px; }
+.success-title { font-size: 20px; font-weight: 700; color: var(--txt); margin-bottom: 4px; }
+.success-text { font-size: 13px; color: var(--txt2); line-height: 1.4; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="frame">
+
+<header>
+  <div class="logo-row">
+    <div class="logo-drop">⚡</div>
+    <div class="logo-text">res<b>Q</b></div>
+  </div>
+  <div class="tog-wrap">
+    <span class="tog-label" id="togLbl">☀ Day</span>
+    <div class="tog" onclick="toggleTheme()">
+      <div class="tok" id="tok">☀️</div>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span>Emergency & Medical Support</div>
+  <div class="hero-title">Find support,<br><em>right away.</em></div>
+  <div class="hero-sub">Choose your situation below — we'll connect you with the right support instantly.</div>
+</div>
+
+<div class="mode-toggle-bar">
+  <div class="mode-tab" id="tabEmrg" onclick="setMode('emergency')">🚨 Emergency Support</div>
+  <div class="mode-tab" id="tabNorm" onclick="setMode('normal')">🏥 Verified Facilities</div>
+</div>
+
+<div class="warn-pill" id="warnPill"></div>
+
+<div id="panelEmrg" class="panel">
+  <div id="emrgFormView">
+    <div class="section-head">
+      <div class="sh-left">
+        <h3>Emergency Requisition</h3>
+        <p>Submit details to find matching assistance</p>
+      </div>
+      <span class="sh-badge emrg">🚨 URGENT</span>
+    </div>
+    <div class="content-area" style="padding: 0 20px 20px;">
+      <form id="emrgForm" onsubmit="submitEmergencyRequest(event)">
+        <div class="form-group">
+          <label class="form-label">Patient Name</label>
+          <input type="text" class="form-input" required placeholder="Enter patient's full name">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-input" required min="0" max="150" placeholder="Years">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Blood Group Type</label>
+            <select class="form-select" id="emrgBloodGroup" required>
+              <option value="" disabled selected>Select</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Units Needed</label>
+            <input type="number" class="form-input" required min="1" max="10" value="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hospital Name & Ward</label>
+          <input type="text" class="form-input" required placeholder="e.g. AMRI Hospital, Ward 3">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Purpose</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Surgery</option>
+              <option>Accident / Trauma</option>
+              <option>Thalassemia / Leukemia</option>
+              <option>Pregnancy / Delivery</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date Required</label>
+            <input type="date" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" required placeholder="For status updates">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Attendant Contact</label>
+          <input type="tel" class="form-input" required placeholder="10-digit mobile number">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Medical Report / Requisition</label>
+          <div class="file-drop-area">
+            <span class="file-ico">📄</span>
+            <span class="file-msg" id="emrgFileMsgTxt">Tap to upload verification document</span>
+            <input type="file" class="file-input" accept=".pdf,image/*" onchange="updateFileName(this, 'emrgFileMsgTxt')">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-primary" id="emrgSubmitBtn">Find Live Matches</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="emrgListView" style="display:none;">
+    <div class="loc-bar">
+      <div class="loc-wrap">
+        <span class="loc-ico">🔍</span>
+        <select class="loc-inp" id="bloodFilterInp" onchange="filterDonors()" style="cursor: pointer;">
+          <option value="all">All Groups</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+        </select>
+      </div>
+    </div>
+    <div class="section-head">
+      <div class="sh-left">
+        <h3>Available Live Contacts</h3>
+        <p id="donorCount">10 contacts available now</p>
+      </div>
+      <span class="sh-badge emrg">🔵 LIVE</span>
+    </div>
+    <div class="content-area" id="donorList"></div>
+  </div>
+</div>
+
+<div id="panelNorm" class="panel">
+  <div class="loc-bar">
+    <div class="loc-wrap">
+      <span class="loc-ico">📍</span>
+      <input class="loc-inp" id="locInp" type="text" placeholder="Search area, e.g. Salt Lake, Garia…">
+      <button class="srch-btn" onclick="filterBanks()">Search</button>
+    </div>
+  </div>
+  <div class="section-head">
+    <div class="sh-left">
+      <h3>Nearby Facilities</h3>
+      <p id="bankCount">10 support hubs found</p>
+    </div>
+    <span class="sh-badge norm">🏥 Verified</span>
+  </div>
+  <div class="content-area" id="bankList"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="#" class="nav-item active">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <span>Home</span>
+  </a>
+  <a href="#" class="nav-item">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    <span>Events</span>
+  </a>
+  <div class="nav-fab-wrapper">
+    <div class="nav-fab-bg"></div>
+    <button class="nav-fab" onclick="setMode('emergency')">
+      <svg viewBox="0 0 24 24"><path d="M12 21a7.5 7.5 0 0 1-7.5-7.5c0-4.14 7.5-11.5 7.5-11.5s7.5 7.36 7.5 11.5A7.5 7.5 0 0 1 12 21z"></path></svg>
+    </button>
+  </div>
+  <a href="#" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    <span>About</span>
+  </a>
+  <a href="#" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<div class="modal-overlay" id="bookingModalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalBankName">Facility Name</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    
+    <div id="bookingFormContainer">
+      <form id="bookingForm" onsubmit="submitRequest(event)">
+        <div class="form-group">
+          <label class="form-label">Patient Name</label>
+          <input type="text" class="form-input" required placeholder="Enter patient's full name">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-input" required min="0" max="150" placeholder="Years">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Blood Group</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Units Needed</label>
+            <input type="number" class="form-input" required min="1" max="10" value="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hospital Name & Ward</label>
+          <input type="text" class="form-input" required placeholder="e.g. AMRI Hospital, Ward 3">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Purpose</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Surgery</option>
+              <option>Accident / Trauma</option>
+              <option>Thalassemia / Leukemia</option>
+              <option>Pregnancy / Delivery</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date Required</label>
+            <input type="date" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" required placeholder="For status updates">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Attendant Contact</label>
+          <input type="tel" class="form-input" required placeholder="10-digit mobile number">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Medical Report / Requisition</label>
+          <div class="file-drop-area">
+            <span class="file-ico">📄</span>
+            <span class="file-msg" id="fileMsgTxt">Tap to upload document prescription</span>
+            <input type="file" class="file-input" accept=".pdf,image/*" onchange="updateFileName(this, 'fileMsgTxt')">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-primary">Submit Request</button>
+        
+        <div class="modal-call-wrap">
+          <button type="button" class="bank-call-btn" id="modalCallBtn">📞 Call Directly</button>
+        </div>
+      </form>
+    </div>
+    
+    <div id="bookingSuccessContainer" style="display:none; text-align:center; padding: 10px 0;">
+      <div class="success-icon">⏳</div>
+      <div class="success-title">Request Pending</div>
+      <div class="success-text">Your request has been successfully sent. Please wait while the facility reviews and approves it.</div>
+      <button type="button" class="btn-primary" onclick="closeModal()">Back to Dashboard</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var donors=[
+  {name:"Nandini",blood:"O+",loc:"Salt Lake, Sector V",dist:"0.6 km",exp:"3 yrs",donations:8,online:true,phone:"9831234567",color:"var(--primary-gradient)"},
+  {name:"Laiba",blood:"A+",loc:"Park Street",dist:"1.2 km",exp:"2 yrs",donations:5,online:true,phone:"9874563210",color:"var(--primary-gradient)"},
+  {name:"Sanjana",blood:"B+",loc:"Behala",dist:"2.1 km",exp:"4 yrs",donations:12,online:false,phone:"9123456780",color:"var(--primary-gradient)"},
+  {name:"Srinjay",blood:"AB+",loc:"Jadavpur",dist:"2.8 km",exp:"1 yr",donations:3,online:true,phone:"7890123456",color:"var(--primary-gradient)"},
+  {name:"Ankita",blood:"O-",loc:"Dum Dum",dist:"3.4 km",exp:"5 yrs",donations:15,online:false,phone:"8765432109",color:"var(--primary-gradient)"},
+  {name:"Tridha",blood:"A-",loc:"Ballygunge",dist:"3.9 km",exp:"2 yrs",donations:6,online:true,phone:"9632587410",color:"var(--primary-gradient)"},
+  {name:"Ria",blood:"B-",loc:"New Town, AA-I",dist:"4.5 km",exp:"3 yrs",donations:9,online:true,phone:"7412369850",color:"var(--primary-gradient)"},
+  {name:"Sounak",blood:"O+",loc:"Kasba",dist:"5.1 km",exp:"6 yrs",donations:18,online:true,phone:"8523697410",color:"var(--primary-gradient)"},
+  {name:"Rimi",blood:"AB-",loc:"Tollygunge",dist:"5.8 km",exp:"1 yr",donations:2,online:false,phone:"9874123650",color:"var(--primary-gradient)"},
+  {name:"Barnali",blood:"A+",loc:"Shyambazar",dist:"6.3 km",exp:"4 yrs",donations:11,online:true,phone:"7896541230",color:"var(--primary-gradient)"}
+];
+
+var banks=[
+  {name:"Regional Transfusion Centre",addr:"Medical College, 88 College St",area:"college square",dist:"1.2 km",phone:"033-22123467",open:true},
+  {name:"SSKM Hospital Hub",addr:"244 AJC Bose Rd, Bhowanipore",area:"sskm bhowanipore",dist:"2.8 km",phone:"033-22044440",open:true},
+  {name:"Calcutta Medical Center",addr:"88 College St, College Square",area:"college square medical",dist:"1.4 km",phone:"033-22121575",open:false},
+  {name:"RN Tagore International Center",addr:"124 EM Bypass, Mukundapur",area:"mukundapur em bypass",dist:"5.4 km",phone:"033-66800000",open:true},
+  {name:"Salt Lake Health Bank",addr:"Sector III, Bidhannagar",area:"salt lake bidhannagar sector",dist:"3.2 km",phone:"033-23370000",open:true},
+  {name:"Apollo Gleneagles Facility",addr:"58 Canal Circular Rd, Kadapara",area:"kadapara canal circular",dist:"7.1 km",phone:"033-23201111",open:true},
+  {name:"Fortis Hospital Services",addr:"730 Anandapur, EM Bypass",area:"fortis anandapur em bypass",dist:"8.3 km",phone:"033-66284444",open:true},
+  {name:"Peerless Support Hub",addr:"360 Pancha Sayar, Garia",area:"peerless garia",dist:"9.6 km",phone:"033-40114011",open:true},
+  {name:"Nil Ratan Sircar Medical Hub",addr:"138 AJC Bose Rd",area:"nil ratan ajc bose",dist:"2.1 km",phone:"033-22765200",open:false},
+  {name:"Park Clinic Health Hub",addr:"4 Gorky Terrace, Elgin",area:"park clinic elgin",dist:"4.0 km",phone:"033-40404040",open:true}
+];
+
+var currentMode='';
+var isEmrgSubmitted = false;
+
+function ini(n){return n.substring(0,2).toUpperCase()}
+
+function setMode(mode){
+  currentMode=mode;
+  var tabE=document.getElementById('tabEmrg');
+  var tabN=document.getElementById('tabNorm');
+  var pE=document.getElementById('panelEmrg');
+  var pN=document.getElementById('panelNorm');
+  var warn=document.getElementById('warnPill');
+
+  tabE.className='mode-tab';
+  tabN.className='mode-tab';
+  pE.className='panel';
+  pN.className='panel';
+  warn.style.display = 'block';
+
+  if(mode==='emergency'){
+    tabE.classList.add('active-emrg');
+    pE.classList.add('active');
+    warn.className='warn-pill emrg-warn';
+    warn.innerHTML='⚡ Emergency mode matches you directly with live register volunteer networks. Use for swift medical responses.';
+    
+    if(!isEmrgSubmitted) {
+      document.getElementById('emrgFormView').style.display = 'block';
+      document.getElementById('emrgListView').style.display = 'none';
+    } else {
+      document.getElementById('emrgFormView').style.display = 'none';
+      document.getElementById('emrgListView').style.display = 'block';
+    }
+  } else {
+    tabN.classList.add('active-norm');
+    pN.classList.add('active');
+    warn.className='warn-pill norm-warn';
+    warn.innerHTML='🏥 Normal mode shows verified healthcare support centers. Filter using search parameters to narrow regions.';
+    renderBanks(banks);
+  }
+}
+
+function renderDonors(list){
+  list = list || donors;
+  document.getElementById('donorCount').textContent = list.length + ' match' + (list.length !== 1 ? 'es' : '') + ' available now';
+  
+  if(!list.length){
+    document.getElementById('donorList').innerHTML='<div class="no-result"><span class="no-ico">🔍</span><div class="no-t">No matches found</div><div class="no-s">Try looking for alternative search options</div></div>';
+    return;
+  }
+
+  var html=list.map(function(d,i){
+    return '<div class="donor-card">'+
+      '<div class="dc-top">'+
+      '<div class="av-wrap">'+
+        '<div class="av" style="background:'+d.color+'">'+ini(d.name)+'</div>'+
+        '<div class="av-blood">'+d.blood+'</div>'+
+        '(d.online?\'<div class="online-ring"></div>\':\'\')+'+
+      '</div>'+
+      '<div class="dc-info">'+
+        '<div class="dc-name">'+d.name+'</div>'+
+        '<div class="dc-loc">📍 '+d.loc+'</div>'+
+        '<div class="dc-tags">'+
+          '<span class="tag">'+d.exp+' tracking</span>'+
+          '<span class="tag '+(d.online?'tag-g':'tag-y')+'">'+(d.online?'Active Now':'Idle')+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="dc-right">'+
+        '<div class="blood-pill">'+d.blood+'</div>'+
+        '<div class="dist-txt">'+d.dist+'</div>'+
+      '</div></div>'+
+      '<div class="dc-bottom">'+
+        '<div class="dc-stats">'+
+          '<div class="stat"><div class="stat-n">'+d.donations+'</div><div class="stat-l">RESPONSES</div></div>'+
+          '<div class="stat"><div class="stat-n">'+d.exp+'</div><div class="stat-l">EXPERIENCE</div></div>'+
+        '</div>'+
+        '<button class="call-btn" onclick="callPerson(event,\''+d.phone+'\',\''+d.name+'\',\'emrg\')">📞 Connect</button>'+
+      '</div></div>';
+  }).join('');
+  document.getElementById('donorList').innerHTML=html;
+}
+
+function filterDonors() {
+  var bg = document.getElementById('bloodFilterInp').value;
+  if (bg === 'all') {
+    renderDonors(donors);
+  } else {
+    var filtered = donors.filter(function(d) {
+      return d.blood === bg;
+    });
+    renderDonors(filtered);
+  }
+}
+
+function renderBanks(list){
+  document.getElementById('bankCount').textContent=list.length+' active location'+(list.length!==1?'s':'')+' verified';
+  if(!list.length){
+    document.getElementById('bankList').innerHTML='<div class="no-result"><span class="no-ico">🏥</span><div class="no-t">No hubs located</div><div class="no-s">Try modifying your region criteria</div></div>';
+    return;
+  }
+  document.getElementById('bankList').innerHTML=list.map(function(b,i){
+    return '<div class="bank-card" onclick="openBookingModal(\''+b.name.replace(/'/g, "\\'")+'\', \''+b.phone+'\')">'+
+      '<div class="bc-top">'+
+        '<div class="bc-icon">🏥</div>'+
+        '<div class="bc-info">'+
+          '<div class="bc-name">'+b.name+'</div>'+
+          '<div class="bc-addr">'+b.addr+'</div>'+
+          '<div class="bc-dist">📍 '+b.dist+' away</div>'+
+          '<span class="bc-status '+(b.open?'open':'closed')+'">'+(b.open?'● Operational':'● Closed')+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="bc-bottom">'+
+        '<div class="bc-phone">📞 '+b.phone+'</div>'+
+        '<button class="bank-call-btn" onclick="callPerson(event,\''+b.phone.replace(/-/g,'')+'\',\''+b.name+'\',\'norm\')">Contact</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+function filterBanks(){
+  var q=document.getElementById('locInp').value.toLowerCase().trim();
+  if(!q){renderBanks(banks);return}
+  var filtered=banks.filter(function(b){
+    return b.name.toLowerCase().includes(q)||b.addr.toLowerCase().includes(q)||b.area.toLowerCase().includes(q);
+  });
+  renderBanks(filtered);
+}
+
+document.getElementById('locInp').addEventListener('keydown',function(e){if(e.key==='Enter')filterBanks()});
+
+function callPerson(e,phone,name,type){
+  e.stopPropagation();
+  var t=document.getElementById('toast');
+  t.textContent='📞 Initializing connection to '+name+'…';
+  t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt=setTimeout(function(){t.classList.remove('show')},2400);
+  setTimeout(function(){window.location.href='tel:+91'+phone.replace(/[^0-9]/g,'')},700);
+}
+
+function toggleTheme(){
+  var html=document.documentElement;
+  var isLight=html.getAttribute('data-theme')==='light';
+  html.setAttribute('data-theme',isLight?'dark':'light');
+  document.getElementById('tok').textContent=isLight?'🌙':'☀️';
+  document.getElementById('togLbl').textContent=isLight?'🌙 Night':'☀ Day';
+}
+
+function openBookingModal(bankName, bankPhone) {
+  document.getElementById('modalBankName').textContent = bankName;
+  document.getElementById('modalCallBtn').onclick = function(e) {
+    callPerson(e, bankPhone, bankName, 'norm');
+  };
+  document.getElementById('bookingFormContainer').style.display = 'block';
+  document.getElementById('bookingSuccessContainer').style.display = 'none';
+  document.getElementById('bookingForm').reset();
+  document.getElementById('bookingModalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('bookingModalOverlay').classList.remove('show');
+}
+
+function updateFileName(input, msgId) {
+  var msgElement = document.getElementById(msgId);
+  if (input.files && input.files.length > 0) {
+    var fileName = input.files[0].name;
+    if (fileName.length > 25) {
+      fileName = fileName.substring(0, 12) + "..." + fileName.substring(fileName.length - 10);
+    }
+    msgElement.textContent = fileName;
+    msgElement.style.color = 'var(--primary-light)';
+  } else {
+    msgElement.textContent = "Tap to upload verification document";
+    msgElement.style.color = 'var(--txt2)';
+  }
+}
+
+function submitEmergencyRequest(e) {
+  e.preventDefault();
+  var btn = document.getElementById('emrgSubmitBtn');
+  var originalText = btn.textContent;
+  
+  btn.textContent = 'Syncing...';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+  
+  var requestedBg = document.getElementById('emrgBloodGroup').value;
+
+  setTimeout(function() {
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    isEmrgSubmitted = true;
+    
+    document.getElementById('emrgFormView').style.display = 'none';
+    document.getElementById('emrgListView').style.display = 'block';
+    
+    if (requestedBg) {
+      document.getElementById('bloodFilterInp').value = requestedBg;
+      filterDonors();
+    } else {
+      document.getElementById('bloodFilterInp').value = 'all';
+      renderDonors(donors);
+    }
+    
+    var t=document.getElementById('toast');
+    t.textContent='✅ Live contacts synced successfully!';
+    t.classList.add('show');
+    clearTimeout(window._tt);
+    window._tt=setTimeout(function(){t.classList.remove('show')},2400);
+  }, 1200);
+}
+
+function submitRequest(e) {
+  e.preventDefault();
+  var btn = e.target.querySelector('button[type="submit"]');
+  var originalText = btn.textContent;
+  
+  btn.textContent = 'Processing...';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+  
+  setTimeout(function() {
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    document.getElementById('bookingFormContainer').style.display = 'none';
+    document.getElementById('bookingSuccessContainer').style.display = 'block';
+  }, 1200);
+}
+</script>
+</body>
+</html>
