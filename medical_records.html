@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Records Vault | SecureHealth</title>
+<link rel="stylesheet" href="medical_records.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<header class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i><span>Back</span></a>
+      <div class="nav-brand">
+        <div class="brand-icon"><i class="fas fa-shield-heart"></i></div>
+        <div class="brand-text">
+          <span class="brand-name">SecureHealth</span>
+          <span class="brand-sub">Medical Vault</span>
+        </div>
+      </div>
+    </div>
+    <div class="nav-center">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search records, reports, history...">
+        <kbd>⌘K</kbd>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+      <div class="notif-wrap">
+        <button class="icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="badge">3</span></button>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-header"><span>Notifications</span><button class="mark-read">Mark all read</button></div>
+          <div class="notif-item unread"><i class="fas fa-file-medical"></i><div><p>Lab report uploaded successfully</p><span>2 min ago</span></div></div>
+          <div class="notif-item unread"><i class="fas fa-shield-alt"></i><div><p>Emergency access requested by Dr. Sharma</p><span>1 hr ago</span></div></div>
+          <div class="notif-item unread"><i class="fas fa-heartbeat"></i><div><p>Health tip: Stay hydrated today!</p><span>3 hr ago</span></div></div>
+          <div class="notif-item"><i class="fas fa-lock"></i><div><p>Biometric login successful</p><span>Yesterday</span></div></div>
+        </div>
+      </div>
+      <div class="user-profile">
+        <div class="user-avatar">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ananya" alt="User">
+        </div>
+        <div class="user-info">
+          <span class="user-name">Ananya Sharma</span>
+          <span class="user-role">Patient</span>
+        </div>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-search"><i class="fas fa-search"></i><input type="text" placeholder="Search records..."></div>
+    <a href="index.html" class="mobile-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <a href="#profile" class="mobile-link"><i class="fas fa-user"></i> Profile</a>
+    <a href="#records" class="mobile-link"><i class="fas fa-folder-medical"></i> Records</a>
+    <a href="#emergency" class="mobile-link"><i class="fas fa-ambulance"></i> Emergency</a>
+    <a href="#security" class="mobile-link"><i class="fas fa-shield-alt"></i> Security</a>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-blob blob1"></div>
+    <div class="hero-blob blob2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge"><i class="fas fa-shield-check"></i> HIPAA Compliant & Secure</div>
+      <h1 class="hero-title">Secure Emergency<br><span class="gradient-text">Medical Records</span><br>Vault</h1>
+      <p class="hero-subtitle">Instant access to life-saving patient information during emergencies. Your health data, protected with military-grade encryption.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('uploadSection').scrollIntoView({behavior:'smooth'})">
+          <i class="fas fa-upload"></i> Upload Medical Record
+        </button>
+        <button class="btn-emergency" onclick="triggerEmergencyMode()">
+          <i class="fas fa-ambulance"></i> Emergency Access
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><span class="stat-num" data-target="2847">0</span><span class="stat-label">Records Stored</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-num" data-target="99">0</span><span class="stat-label">% Uptime</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-num" data-target="256">0</span><span class="stat-label">bit Encryption</span></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-illustration">
+        <div class="shield-main">
+          <div class="shield-pulse"></div>
+          <div class="shield-pulse delay1"></div>
+          <i class="fas fa-shield-heart shield-icon"></i>
+        </div>
+        <div class="floating-badge fb1"><i class="fas fa-lock"></i> Encrypted</div>
+        <div class="floating-badge fb2"><i class="fas fa-check-circle"></i> Verified</div>
+        <div class="floating-badge fb3"><i class="fas fa-cloud-upload-alt"></i> Cloud Backed</div>
+        <div class="floating-badge fb4"><i class="fas fa-user-md"></i> Doctor Ready</div>
+        <div class="ecg-line">
+          <svg viewBox="0 0 300 60" preserveAspectRatio="none">
+            <polyline class="ecg-path" points="0,30 30,30 45,30 55,5 65,55 75,30 90,30 120,30 135,30 145,10 155,50 165,30 180,30 210,30 225,30 235,8 245,52 255,30 270,30 300,30"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="profile">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-user-circle"></i> Patient Profile</h2>
+      <p class="section-sub">Your complete medical identity card</p>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-card glass-card">
+        <div class="profile-header">
+          <div class="profile-avatar-wrap">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ananya" alt="Patient" class="profile-avatar">
+            <div class="status-dot online"></div>
+          </div>
+          <div class="profile-info">
+            <div class="emergency-badge"><i class="fas fa-star-of-life"></i> Emergency Access Enabled</div>
+            <h3 class="profile-name">Ananya Sharma</h3>
+            <p class="profile-id">Patient ID: #MV-2024-00847</p>
+            <div class="heartbeat-line">
+              <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+                <polyline class="hb-path" points="0,20 20,20 30,20 38,5 46,35 54,20 70,20 80,20 90,8 98,32 106,20 120,20 140,20 150,6 158,34 166,20 180,20 200,20"/>
+              </svg>
+            </div>
+            <div class="health-status-live"><span class="live-dot"></span> Live Health Status: <strong>Normal</strong></div>
+          </div>
+          <button class="edit-btn"><i class="fas fa-pen"></i> Edit Profile</button>
+        </div>
+        <div class="profile-details">
+          <div class="detail-grid">
+            <div class="detail-item"><i class="fas fa-birthday-cake"></i><div><span>Age</span><strong>28 Years</strong></div></div>
+            <div class="detail-item blood"><i class="fas fa-tint"></i><div><span>Blood Group</span><strong>B+</strong></div></div>
+            <div class="detail-item"><i class="fas fa-ruler-vertical"></i><div><span>Height</span><strong>165 cm</strong></div></div>
+            <div class="detail-item"><i class="fas fa-weight"></i><div><span>Weight</span><strong>58 kg</strong></div></div>
+            <div class="detail-item"><i class="fas fa-phone-alt"></i><div><span>Emergency Contact</span><strong>+91 98765 43210</strong></div></div>
+            <div class="detail-item allergy"><i class="fas fa-exclamation-triangle"></i><div><span>Allergies</span><strong>Penicillin, Dust</strong></div></div>
+            <div class="detail-item"><i class="fas fa-heartbeat"></i><div><span>Chronic Diseases</span><strong>Mild Asthma</strong></div></div>
+            <div class="detail-item"><i class="fas fa-pills"></i><div><span>Current Medications</span><strong>Montelukast 10mg</strong></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="records">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-folder-medical"></i> Medical Records</h2>
+      <p class="section-sub">Click any card to access your records</p>
+    </div>
+    <div class="records-grid">
+      <div class="record-card glass-card" onclick="openModal('prescriptions')">
+        <div class="record-icon rx"><i class="fas fa-prescription-bottle-alt"></i></div>
+        <h4>Prescriptions</h4>
+        <p>12 documents</p>
+        <span class="record-date">Last: Dec 2024</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('labReports')">
+        <div class="record-icon lab"><i class="fas fa-flask"></i></div>
+        <h4>Lab Reports</h4>
+        <p>8 documents</p>
+        <span class="record-date">Last: Nov 2024</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('xrays')">
+        <div class="record-icon xray"><i class="fas fa-x-ray"></i></div>
+        <h4>X-Rays</h4>
+        <p>5 documents</p>
+        <span class="record-date">Last: Oct 2024</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('insurance')">
+        <div class="record-icon ins"><i class="fas fa-file-contract"></i></div>
+        <h4>Insurance</h4>
+        <p>3 documents</p>
+        <span class="record-date">Last: Jan 2024</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('emergencyHistory')">
+        <div class="record-icon emg"><i class="fas fa-ambulance"></i></div>
+        <h4>Emergency History</h4>
+        <p>2 incidents</p>
+        <span class="record-date">Last: Mar 2023</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('vaccination')">
+        <div class="record-icon vac"><i class="fas fa-syringe"></i></div>
+        <h4>Vaccination Records</h4>
+        <p>10 vaccines</p>
+        <span class="record-date">Last: Aug 2024</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('mri')">
+        <div class="record-icon mri"><i class="fas fa-brain"></i></div>
+        <h4>MRI Reports</h4>
+        <p>2 reports</p>
+        <span class="record-date">Last: Jul 2024</span>
+        <div class="record-glow"></div>
+      </div>
+      <div class="record-card glass-card" onclick="openModal('ecg')">
+        <div class="record-icon ecg"><i class="fas fa-heartbeat"></i></div>
+        <h4>ECG Reports</h4>
+        <p>4 reports</p>
+        <span class="record-date">Last: Sep 2024</span>
+        <div class="record-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="healthDashboard">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-chart-line"></i> Health Status Dashboard</h2>
+      <p class="section-sub">Real-time health monitoring overview</p>
+    </div>
+    <div class="health-grid">
+      <div class="health-card glass-card">
+        <div class="health-circle" data-value="72" data-max="120" data-color="#ef4444">
+          <svg class="circle-svg" viewBox="0 0 120 120">
+            <circle class="circle-bg" cx="60" cy="60" r="52"/>
+            <circle class="circle-fill heart-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="circle-content">
+            <span class="circle-val">72</span>
+            <span class="circle-unit">bpm</span>
+          </div>
+        </div>
+        <h4><i class="fas fa-heart"></i> Heart Rate</h4>
+        <div class="health-status good"><i class="fas fa-circle"></i> Normal</div>
+        <div class="health-pulse heart-pulse"></div>
+      </div>
+      <div class="health-card glass-card">
+        <div class="health-circle" data-value="120" data-max="200" data-color="#3b82f6">
+          <svg class="circle-svg" viewBox="0 0 120 120">
+            <circle class="circle-bg" cx="60" cy="60" r="52"/>
+            <circle class="circle-fill bp-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="circle-content">
+            <span class="circle-val">120</span>
+            <span class="circle-unit">mmHg</span>
+          </div>
+        </div>
+        <h4><i class="fas fa-tachometer-alt"></i> Blood Pressure</h4>
+        <div class="health-status good"><i class="fas fa-circle"></i> Normal</div>
+      </div>
+      <div class="health-card glass-card">
+        <div class="health-circle" data-value="98" data-max="100" data-color="#10b981">
+          <svg class="circle-svg" viewBox="0 0 120 120">
+            <circle class="circle-bg" cx="60" cy="60" r="52"/>
+            <circle class="circle-fill oxy-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="circle-content">
+            <span class="circle-val">98</span>
+            <span class="circle-unit">%</span>
+          </div>
+        </div>
+        <h4><i class="fas fa-lungs"></i> Oxygen Level</h4>
+        <div class="health-status good"><i class="fas fa-circle"></i> Excellent</div>
+      </div>
+      <div class="health-card glass-card">
+        <div class="health-circle" data-value="95" data-max="200" data-color="#f59e0b">
+          <svg class="circle-svg" viewBox="0 0 120 120">
+            <circle class="circle-bg" cx="60" cy="60" r="52"/>
+            <circle class="circle-fill sugar-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="circle-content">
+            <span class="circle-val">95</span>
+            <span class="circle-unit">mg/dL</span>
+          </div>
+        </div>
+        <h4><i class="fas fa-vial"></i> Sugar Level</h4>
+        <div class="health-status good"><i class="fas fa-circle"></i> Normal</div>
+      </div>
+      <div class="health-card glass-card">
+        <div class="health-circle" data-value="98.6" data-max="110" data-color="#8b5cf6">
+          <svg class="circle-svg" viewBox="0 0 120 120">
+            <circle class="circle-bg" cx="60" cy="60" r="52"/>
+            <circle class="circle-fill temp-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="circle-content">
+            <span class="circle-val">98.6</span>
+            <span class="circle-unit">°F</span>
+          </div>
+        </div>
+        <h4><i class="fas fa-thermometer-half"></i> Body Temperature</h4>
+        <div class="health-status good"><i class="fas fa-circle"></i> Normal</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="timeline">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-history"></i> Medical History Timeline</h2>
+      <p class="section-sub">Your complete healthcare journey</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-line"></div>
+      <div class="timeline-item left" data-aos>
+        <div class="timeline-dot"><i class="fas fa-hospital"></i></div>
+        <div class="timeline-content glass-card">
+          <div class="tl-date"><i class="far fa-calendar-alt"></i> December 2024</div>
+          <h4>Apollo Hospital Visit</h4>
+          <p>Routine checkup and blood work. All reports normal. Blood pressure slightly elevated — advised lifestyle changes.</p>
+          <div class="tl-tag routine">Routine Visit</div>
+        </div>
+      </div>
+      <div class="timeline-item right" data-aos>
+        <div class="timeline-dot surgery"><i class="fas fa-syringe"></i></div>
+        <div class="timeline-content glass-card">
+          <div class="tl-date"><i class="far fa-calendar-alt"></i> August 2024</div>
+          <h4>Vaccination — COVID Booster</h4>
+          <p>Received COVID-19 booster dose at local health center. No adverse reactions reported.</p>
+          <div class="tl-tag vaccine">Vaccination</div>
+        </div>
+      </div>
+      <div class="timeline-item left" data-aos>
+        <div class="timeline-dot emergency"><i class="fas fa-ambulance"></i></div>
+        <div class="timeline-content glass-card">
+          <div class="tl-date"><i class="far fa-calendar-alt"></i> March 2023</div>
+          <h4>Emergency — Asthma Attack</h4>
+          <p>Severe asthma episode. Admitted to Fortis Hospital for 2 days. Nebulization treatment administered. Discharged with new prescription.</p>
+          <div class="tl-tag emergency-tag">Emergency</div>
+        </div>
+      </div>
+      <div class="timeline-item right" data-aos>
+        <div class="timeline-dot"><i class="fas fa-flask"></i></div>
+        <div class="timeline-content glass-card">
+          <div class="tl-date"><i class="far fa-calendar-alt"></i> November 2023</div>
+          <h4>Lab Reports — Complete Blood Count</h4>
+          <p>CBC and lipid profile tests. Slight vitamin D deficiency detected. Supplementation prescribed for 3 months.</p>
+          <div class="tl-tag lab-tag">Lab Test</div>
+        </div>
+      </div>
+      <div class="timeline-item left" data-aos>
+        <div class="timeline-dot surgery"><i class="fas fa-procedures"></i></div>
+        <div class="timeline-content glass-card">
+          <div class="tl-date"><i class="far fa-calendar-alt"></i> June 2022</div>
+          <h4>Minor Surgery — Appendix Removal</h4>
+          <p>Laparoscopic appendectomy performed successfully at Max Hospital. Recovery: 5 days. No complications post-surgery.</p>
+          <div class="tl-tag surgery-tag">Surgery</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="uploadSection">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Document Upload</h2>
+      <p class="section-sub">Securely upload and manage your medical documents</p>
+    </div>
+    <div class="upload-container glass-card">
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+        <h3>Drag & Drop your files here</h3>
+        <p>Supports PDF, JPG, PNG, DICOM files up to 50MB</p>
+        <label class="btn-primary upload-label">
+          <i class="fas fa-plus"></i> Browse Files
+          <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png" hidden>
+        </label>
+      </div>
+      <div class="upload-actions">
+        <button class="btn-outline" onclick="simulateScan()"><i class="fas fa-qrcode"></i> Scan Document</button>
+        <button class="btn-outline" onclick="shareWithHospital()"><i class="fas fa-share-alt"></i> Share with Hospital</button>
+      </div>
+      <div class="uploaded-files" id="uploadedFiles">
+        <div class="file-item">
+          <div class="file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+          <div class="file-info">
+            <span class="file-name">Blood_Test_Dec2024.pdf</span>
+            <span class="file-meta">2.4 MB · Uploaded Dec 15, 2024</span>
+          </div>
+          <div class="file-actions">
+            <button onclick="previewFile(this)"><i class="fas fa-eye"></i></button>
+            <button><i class="fas fa-download"></i></button>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="file-item">
+          <div class="file-icon img"><i class="fas fa-file-image"></i></div>
+          <div class="file-info">
+            <span class="file-name">Chest_Xray_Oct2024.jpg</span>
+            <span class="file-meta">5.1 MB · Uploaded Oct 22, 2024</span>
+          </div>
+          <div class="file-actions">
+            <button onclick="previewFile(this)"><i class="fas fa-eye"></i></button>
+            <button><i class="fas fa-download"></i></button>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="file-item">
+          <div class="file-icon pdf"><i class="fas fa-file-pdf"></i></div>
+          <div class="file-info">
+            <span class="file-name">Prescription_Montelukast.pdf</span>
+            <span class="file-meta">0.8 MB · Uploaded Nov 10, 2024</span>
+          </div>
+          <div class="file-actions">
+            <button onclick="previewFile(this)"><i class="fas fa-eye"></i></button>
+            <button><i class="fas fa-download"></i></button>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="emergency">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-first-aid"></i> Emergency Access Panel</h2>
+      <p class="section-sub">Instant access during critical situations</p>
+    </div>
+    <div class="emergency-grid">
+      <div class="emergency-qr glass-card">
+        <div class="qr-shield"><div class="shield-anim"><i class="fas fa-shield-alt"></i></div></div>
+        <h3>Emergency QR Code</h3>
+        <p>Scan to instantly access patient records</p>
+        <div class="qr-code-box">
+          <div class="qr-placeholder"><i class="fas fa-qrcode"></i></div>
+          <div class="qr-scan-line"></div>
+        </div>
+        <button class="btn-primary" onclick="generateQR()"><i class="fas fa-sync-alt"></i> Generate New QR</button>
+      </div>
+      <div class="emergency-controls glass-card">
+        <h3><i class="fas fa-bolt"></i> Quick Emergency Actions</h3>
+        <div class="emg-btn-grid">
+          <button class="emg-action-btn share" onclick="emergencyShare()"><i class="fas fa-share-alt"></i><span>One-Tap Share</span></button>
+          <button class="emg-action-btn hospital" onclick="grantHospitalAccess()"><i class="fas fa-hospital"></i><span>Hospital Access</span></button>
+          <button class="emg-action-btn unlock" id="lockToggle" onclick="toggleLock()"><i class="fas fa-lock-open"></i><span>Emergency Unlock</span></button>
+          <button class="emg-action-btn sos" onclick="triggerSOS()"><i class="fas fa-exclamation-triangle"></i><span>SOS Alert</span></button>
+        </div>
+        <div class="access-logs">
+          <h4><i class="fas fa-history"></i> Last Access Logs</h4>
+          <div class="log-item"><i class="fas fa-user-md"></i><div><p>Dr. Priya Sharma accessed records</p><span>Today, 10:32 AM</span></div><span class="log-status ok">Authorized</span></div>
+          <div class="log-item"><i class="fas fa-hospital"></i><div><p>Apollo Hospital emergency access</p><span>Dec 14, 2024</span></div><span class="log-status ok">Authorized</span></div>
+          <div class="log-item"><i class="fas fa-user-shield"></i><div><p>Biometric login — Ananya Sharma</p><span>Dec 13, 2024</span></div><span class="log-status ok">Verified</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="security">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-shield-alt"></i> Security Dashboard</h2>
+      <p class="section-sub">Your data protection overview</p>
+    </div>
+    <div class="security-grid">
+      <div class="security-card glass-card">
+        <div class="sec-icon encrypt"><i class="fas fa-lock"></i></div>
+        <h4>End-to-End Encryption</h4>
+        <p>AES-256 military-grade encryption active</p>
+        <div class="sec-badge active"><i class="fas fa-check-circle"></i> Active</div>
+        <div class="sec-indicator"></div>
+      </div>
+      <div class="security-card glass-card">
+        <div class="sec-icon bio"><i class="fas fa-fingerprint"></i></div>
+        <h4>Biometric Protection</h4>
+        <p>Face ID & fingerprint authentication enabled</p>
+        <div class="sec-badge active"><i class="fas fa-check-circle"></i> Enabled</div>
+        <div class="sec-indicator"></div>
+      </div>
+      <div class="security-card glass-card">
+        <div class="sec-icon cloud"><i class="fas fa-cloud-upload-alt"></i></div>
+        <h4>Secure Cloud Backup</h4>
+        <p>Automatic encrypted backup every 6 hours</p>
+        <div class="sec-badge active"><i class="fas fa-check-circle"></i> Last: 2h ago</div>
+        <div class="sec-indicator"></div>
+      </div>
+      <div class="security-card glass-card">
+        <div class="sec-icon role"><i class="fas fa-user-shield"></i></div>
+        <h4>Role-Based Permissions</h4>
+        <p>Doctor, Hospital, Emergency — controlled access</p>
+        <div class="sec-badge active"><i class="fas fa-check-circle"></i> Configured</div>
+        <div class="sec-indicator"></div>
+      </div>
+      <div class="security-card glass-card">
+        <div class="sec-icon log"><i class="fas fa-clipboard-list"></i></div>
+        <h4>Access Logs</h4>
+        <p>Full audit trail — every access tracked</p>
+        <div class="sec-badge active"><i class="fas fa-check-circle"></i> 47 events</div>
+        <div class="sec-indicator"></div>
+      </div>
+      <div class="security-card glass-card">
+        <div class="sec-icon login"><i class="fas fa-sign-in-alt"></i></div>
+        <h4>Last Login Activity</h4>
+        <p>Today, 9:45 AM · Mumbai, India</p>
+        <div class="sec-badge active"><i class="fas fa-check-circle"></i> Verified</div>
+        <div class="sec-indicator"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="breathingSection" style="display:none;">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-wind"></i> Breathing Exercise</h2>
+      <p class="section-sub">Take a moment to calm yourself</p>
+    </div>
+    <div class="breathing-container glass-card">
+      <div class="breathing-circle-wrap">
+        <div class="breathing-ring r1"></div>
+        <div class="breathing-ring r2"></div>
+        <div class="breathing-ring r3"></div>
+        <div class="breathing-circle" id="breathingCircle">
+          <span id="breathText">Press Start</span>
+        </div>
+      </div>
+      <div class="breathing-timer" id="breathTimer">0s</div>
+      <div class="breathing-phase" id="breathPhase">Ready to begin</div>
+      <div class="breathing-controls">
+        <button class="btn-primary" id="breathStart" onclick="startBreathing()"><i class="fas fa-play"></i> Start Session</button>
+        <button class="btn-outline" onclick="stopBreathing()"><i class="fas fa-stop"></i> Stop</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="healthTips">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-leaf"></i> Daily Health Tips</h2>
+      <p class="section-sub">Small habits, big impact</p>
+    </div>
+    <div class="tips-slider-wrap">
+      <div class="tips-slider" id="tipsSlider">
+        <div class="tip-card glass-card">
+          <div class="tip-icon water"><i class="fas fa-tint"></i></div>
+          <h4>Stay Hydrated</h4>
+          <p>Drink at least 8 glasses of water daily. Proper hydration supports all bodily functions and keeps your energy levels high.</p>
+        </div>
+        <div class="tip-card glass-card">
+          <div class="tip-icon sleep"><i class="fas fa-moon"></i></div>
+          <h4>Sleep Properly</h4>
+          <p>Aim for 7-9 hours of quality sleep. Good sleep restores your immune system and improves cognitive performance.</p>
+        </div>
+        <div class="tip-card glass-card">
+          <div class="tip-icon food"><i class="fas fa-apple-alt"></i></div>
+          <h4>Eat Balanced</h4>
+          <p>Include fruits, vegetables, lean proteins and whole grains in every meal. Limit processed foods and sugar intake.</p>
+        </div>
+        <div class="tip-card glass-card">
+          <div class="tip-icon exercise"><i class="fas fa-running"></i></div>
+          <h4>Exercise Regularly</h4>
+          <p>At least 30 minutes of moderate activity per day strengthens your heart, muscles, and mental health.</p>
+        </div>
+        <div class="tip-card glass-card">
+          <div class="tip-icon stress"><i class="fas fa-spa"></i></div>
+          <h4>Reduce Stress</h4>
+          <p>Practice mindfulness, meditation, or yoga. Chronic stress weakens immunity and disrupts sleep patterns.</p>
+        </div>
+        <div class="tip-card glass-card">
+          <div class="tip-icon checkup"><i class="fas fa-stethoscope"></i></div>
+          <h4>Regular Checkups</h4>
+          <p>Schedule annual health screenings. Early detection saves lives — don't skip your routine medical appointments.</p>
+        </div>
+      </div>
+      <div class="tips-nav">
+        <button class="tip-prev" onclick="slideTips(-1)"><i class="fas fa-chevron-left"></i></button>
+        <div class="tips-dots" id="tipsDots"></div>
+        <button class="tip-next" onclick="slideTips(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="activityLog">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><i class="fas fa-clipboard-list"></i> Activity Log</h2>
+      <p class="section-sub">Your recent actions and system events</p>
+    </div>
+    <div class="activity-grid">
+      <div class="activity-card glass-card">
+        <h4><i class="fas fa-upload"></i> Recent Uploads</h4>
+        <div class="activity-list" id="recentUploads">
+          <div class="act-item"><div class="act-dot blue"></div><div><p>Blood_Test_Dec2024.pdf uploaded</p><span>Today, 11:05 AM</span></div></div>
+          <div class="act-item"><div class="act-dot blue"></div><div><p>Chest_Xray_Oct2024.jpg uploaded</p><span>Oct 22, 2024</span></div></div>
+          <div class="act-item"><div class="act-dot blue"></div><div><p>ECG_Report_Sep2024.pdf uploaded</p><span>Sep 18, 2024</span></div></div>
+        </div>
+      </div>
+      <div class="activity-card glass-card">
+        <h4><i class="fas fa-hospital"></i> Hospital Access History</h4>
+        <div class="activity-list">
+          <div class="act-item"><div class="act-dot green"></div><div><p>Apollo Hospital accessed records</p><span>Today, 10:32 AM</span></div></div>
+          <div class="act-item"><div class="act-dot green"></div><div><p>Fortis Hospital — Emergency access</p><span>Dec 14, 2024</span></div></div>
+          <div class="act-item"><div class="act-dot yellow"></div><div><p>Max Hospital — access expired</p><span>Nov 30, 2024</span></div></div>
+        </div>
+      </div>
+      <div class="activity-card glass-card">
+        <h4><i class="fas fa-share-alt"></i> Emergency Shares</h4>
+        <div class="activity-list">
+          <div class="act-item"><div class="act-dot red"></div><div><p>Emergency share — Dr. Priya</p><span>Today, 10:30 AM</span></div></div>
+          <div class="act-item"><div class="act-dot red"></div><div><p>SOS share — Fortis Emergency</p><span>Mar 15, 2023</span></div></div>
+          <div class="act-item"><div class="act-dot red"></div><div><p>Family share — Rahul Sharma</p><span>Dec 14, 2024</span></div></div>
+        </div>
+      </div>
+      <div class="activity-card glass-card">
+        <h4><i class="fas fa-sign-in-alt"></i> Login History</h4>
+        <div class="activity-list">
+          <div class="act-item"><div class="act-dot green"></div><div><p>Biometric login — Mumbai</p><span>Today, 9:45 AM</span></div></div>
+          <div class="act-item"><div class="act-dot green"></div><div><p>Password login — Delhi</p><span>Dec 14, 9:20 AM</span></div></div>
+          <div class="act-item"><div class="act-dot yellow"></div><div><p>Failed attempt — Unknown</p><span>Dec 13, 11:42 PM</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo"><i class="fas fa-shield-heart"></i> SecureHealth</div>
+          <p>Protecting your most vital health data with military-grade security. Your records, always available when it matters most.</p>
+          <div class="secure-badge"><div class="secure-dot"></div><span>Secure Connection Active</span></div>
+        </div>
+        <div class="footer-col">
+          <h5>Legal</h5>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">HIPAA Compliance</a>
+          <a href="#">Data Security</a>
+        </div>
+        <div class="footer-col">
+          <h5>Emergency Support</h5>
+          <a href="#"><i class="fas fa-phone-alt"></i> 1800-SECURE-RX</a>
+          <a href="#"><i class="fas fa-ambulance"></i> Emergency: 108</a>
+          <a href="#"><i class="fas fa-envelope"></i> help@securehealth.in</a>
+        </div>
+        <div class="footer-col">
+          <h5>Connect</h5>
+          <div class="social-links">
+            <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-btn"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-btn"><i class="fab fa-facebook"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <span>© 2024 SecureHealth Medical Vault. All rights reserved.</span>
+      <div class="footer-badges">
+        <span><i class="fas fa-lock"></i> HIPAA</span>
+        <span><i class="fas fa-shield-alt"></i> ISO 27001</span>
+        <span><i class="fas fa-certificate"></i> SSL Secured</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+<div class="modal glass-card" id="recordModal">
+  <div class="modal-header">
+    <div class="modal-title-wrap"><i class="fas fa-folder-open" id="modalIcon"></i><h3 id="modalTitle">Records</h3></div>
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="modal-body" id="modalBody"></div>
+</div>
+
+<div class="emergency-overlay" id="emergencyOverlay">
+  <div class="emergency-alert">
+    <div class="emg-pulse-ring"></div>
+    <div class="emg-pulse-ring delay"></div>
+    <i class="fas fa-exclamation-triangle emg-icon"></i>
+    <h2>EMERGENCY DETECTED</h2>
+    <p id="emergencyMsg">Connecting to emergency services...</p>
+    <div class="emg-actions">
+      <button class="btn-emergency" onclick="callAmbulance()"><i class="fas fa-ambulance"></i> Call Ambulance (108)</button>
+      <button class="btn-outline" onclick="closeEmergency()"><i class="fas fa-times"></i> Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="chatbot-fab" id="chatbotFab" onclick="toggleChatbot()">
+  <div class="fab-pulse"></div>
+  <i class="fas fa-comment-medical"></i>
+  <span class="fab-badge" id="fabBadge">1</span>
+</div>
+
+<div class="chatbot-window" id="chatbotWindow">
+  <div class="chat-header">
+    <div class="chat-avatar-wrap">
+      <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+      <div class="chat-status-dot"></div>
+    </div>
+    <div class="chat-info">
+      <h4>JUHI</h4>
+      <span class="chat-online"><i class="fas fa-circle"></i> Online · Healthcare AI</span>
+    </div>
+    <div class="chat-header-actions">
+      <button onclick="toggleChatbot()" title="Close"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="quick-replies" id="quickReplies">
+    <button class="qr-btn" onclick="sendQuickReply('Fever Help')">🌡️ Fever Help</button>
+    <button class="qr-btn" onclick="sendQuickReply('Headache')">🤕 Headache</button>
+    <button class="qr-btn" onclick="sendQuickReply('Breathing Problem')">😮‍💨 Breathing</button>
+    <button class="qr-btn" onclick="sendQuickReply('Upload Report')">📄 Upload Report</button>
+    <button class="qr-btn" onclick="sendQuickReply('Emergency SOS')">🆘 Emergency SOS</button>
+    <button class="qr-btn" onclick="sendQuickReply('Calm Me Down')">🧘 Calm Me Down</button>
+    <button class="qr-btn" onclick="sendQuickReply('Book Ambulance')">🚑 Book Ambulance</button>
+  </div>
+  <div class="chat-input-area">
+    <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="Voice input"><i class="fas fa-microphone"></i></button>
+    <input type="text" id="chatInput" placeholder="Type your symptoms or question..." onkeydown="if(event.key==='Enter')sendMessage()">
+    <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<script src="medical_records.js"></script>
+</body>
+</html>
