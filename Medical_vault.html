@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>resQ | Secure Medical Records Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          blue: '#1d6cff',
+          blueHover: '#1255cc',
+          bgLight: '#f3f7fc',
+          surfaceDark: '#0f192b'
+        }
+      }
+    }
+  }
+}
+</script>
+<style>
+:root {
+  --bg: #f3f7fc;
+  --bg-gradient: linear-gradient(135deg, #f3f7fc 0%, #e9eff7 100%);
+  --surface: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.75);
+  --border: rgba(29, 108, 255, 0.12);
+  --border-focus: #1d6cff;
+  --text: #0e1a30;
+  --text-muted: #536885;
+  --text-dimmed: #8da2bd;
+  --blue: #1d6cff;
+  --blue-gradient: linear-gradient(135deg, #1d6cff 0%, #0c48b8 100%);
+  --red: #ef4444;
+  --red-light: rgba(239, 68, 68, 0.08);
+  --green: #10b981;
+  --green-light: rgba(16, 185, 129, 0.08);
+  --yellow: #f59e0b;
+  --yellow-light: rgba(245, 158, 11, 0.08);
+  --purple: #8b5cf6;
+  --purple-light: rgba(139, 92, 246, 0.08);
+  --shadow-sm: 0 2px 10px rgba(29, 108, 255, 0.04);
+  --shadow-md: 0 8px 30px rgba(29, 108, 255, 0.08);
+  --shadow-lg: 0 20px 50px rgba(29, 108, 255, 0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-lg: 28px;
+  --glass: blur(20px) saturate(1.4);
+}
+
+[data-theme="dark"] {
+  --bg: #070e1b;
+  --bg-gradient: linear-gradient(135deg, #070e1b 0%, #0d172a 100%);
+  --surface: #0f192b;
+  --surface-glass: rgba(15, 25, 43, 0.75);
+  --border: rgba(59, 130, 246, 0.2);
+  --border-focus: #3b82f6;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dimmed: #64748b;
+  --blue: #3b82f6;
+  --blue-hover: #60a5fa;
+  --blue-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
+
+.glass-card {
+  background: var(--surface-glass);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(29, 108, 255, 0.25);
+}
+
+.btn-primary {
+  background: var(--blue-gradient);
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(29, 108, 255, 0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(29, 108, 255, 0.4);
+}
+
+.btn-outline {
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline:hover {
+  background: var(--blue-light);
+  transform: translateY(-1px);
+}
+
+.edit-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.edit-input:focus {
+  border-color: var(--blue);
+}
+
+@media (min-width: 1024px) {
+  .mobile-interface {
+    display: none !important;
+  }
+  .desktop-interface {
+    display: grid !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .mobile-interface {
+    display: block !important;
+  }
+  .desktop-interface {
+    display: none !important;
+  }
+}
+
+.desktop-interface {
+  display: none;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+.desk-sidebar {
+  background: var(--surface-glass);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border-right: 1px solid var(--border);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.desk-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  color: var(--blue);
+  margin-bottom: 40px;
+}
+
+.desk-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.desk-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.desk-nav-btn:hover, .desk-nav-btn.active {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+.desk-main {
+  padding: 40px;
+  overflow-y: auto;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.desk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.desk-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-glass);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 10px 24px;
+  width: 360px;
+}
+
+.desk-search input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  width: 100%;
+  font-family: inherit;
+}
+
+.desk-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.desk-workspace {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 30px;
+}
+
+.mobile-interface {
+  padding-bottom: 90px;
+}
+
+.mobile-header {
+  background: var(--surface-glass);
+  backdrop-filter: var(--glass);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.3rem;
+  color: var(--blue);
+}
+
+.mobile-content {
+  padding: 20px 16px;
+}
+
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 76px;
+  background: var(--surface-glass);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  padding-bottom: 10px;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.mobile-nav-item i {
+  font-size: 1.35rem;
+}
+
+.mobile-nav-item.active {
+  color: var(--blue);
+}
+
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.vital-card {
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.vital-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.vital-icon.heart { background: var(--red-light); color: var(--red); }
+.vital-icon.pressure { background: var(--blue-light); color: var(--blue); }
+.vital-icon.oxygen { background: var(--green-light); color: var(--green); }
+.vital-icon.sugar { background: var(--yellow-light); color: var(--yellow); }
+.vital-icon.temp { background: var(--purple-light); color: var(--purple); }
+
+.vital-val {
+  font-size: 1.4rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.vital-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.vault-card {
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.vault-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 1.4rem;
+}
+
+.vault-card-icon.prescriptions { background: var(--blue-light); color: var(--blue); }
+.vault-card-icon.labReports { background: var(--green-light); color: var(--green); }
+.vault-card-icon.xrays { background: rgba(107, 114, 128, 0.1); color: #6b7280; }
+.vault-card-icon.insurance { background: var(--yellow-light); color: var(--yellow); }
+.vault-card-icon.vaccination { background: var(--purple-light); color: var(--purple); }
+.vault-card-icon.mri { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+.vault-card-icon.ecg { background: var(--red-light); color: var(--red); }
+
+.vault-card h4 {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.vault-card span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.profile-card-widget {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+.profile-widget-avatar-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+}
+
+.profile-widget-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--blue);
+  object-fit: cover;
+}
+
+.profile-widget-avatar-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--blue);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.profile-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-field-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.profile-field-item label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.profile-field-item strong {
+  font-size: 0.85rem;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  padding-left: 20px;
+  border-left: 2px dashed var(--border);
+}
+
+.timeline-card {
+  position: relative;
+  padding: 16px;
+}
+
+.timeline-dot-anchor {
+  position: absolute;
+  left: -29px;
+  top: 20px;
+  background: var(--blue);
+  color: #fff;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+}
+
+.timeline-date {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.timeline-card h4 {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.timeline-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.upload-drag-box {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 30px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(29, 108, 255, 0.02);
+}
+
+.upload-drag-box:hover {
+  background: var(--blue-light);
+  border-color: var(--blue);
+}
+
+.uploaded-row-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.uploaded-row-item i {
+  font-size: 1.25rem;
+}
+
+.uploaded-row-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.uploaded-row-details span {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uploaded-row-details small {
+  font-size: 0.72rem;
+  color: var(--text-dimmed);
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.row-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg);
+}
+
+.row-action-btn:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 14, 27, 0.45);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  z-index: 2001;
+  width: 90%;
+  max-width: 550px;
+  max-height: 85vh;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.toast-box {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 320px;
+}
+
+.toast-node {
+  background: var(--surface);
+  color: var(--text);
+  border-left: 4px solid var(--blue);
+  box-shadow: var(--shadow-lg);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideToastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-node.success { border-left-color: var(--green); }
+.toast-node.error { border-left-color: var(--red); }
+
+@keyframes slideToastIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chatbot-panel {
+  position: fixed;
+  bottom: 100px;
+  right: 28px;
+  width: 360px;
+  height: 480px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chatbot-panel.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+
+.chatbot-header {
+  padding: 16px 20px;
+  background: var(--blue-gradient);
+  color: #fff;
+  border-radius: var(--radius) var(--radius) 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatbot-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatbot-input-bar {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  background: var(--surface);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.chatbot-input-bar input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+}
+
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  max-width: 85%;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.chat-bubble.bot {
+  background: var(--bg);
+  color: var(--text);
+  align-self: flex-start;
+}
+
+.chat-bubble.user {
+  background: var(--blue-gradient);
+  color: #fff;
+  align-self: flex-end;
+}
+
+.chat-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--blue-gradient);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 8px 24px rgba(29, 108, 255, 0.3);
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.chat-fab:hover {
+  transform: scale(1.05);
+}
+
+.breathing-circle-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breathing-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--blue-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 0 30px rgba(29, 108, 255, 0.3);
+  transition: transform 4s ease-in-out;
+  position: relative;
+  z-index: 5;
+}
+
+.breathing-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(29, 108, 255, 0.15);
+  inset: 0;
+  transition: all 4s ease-in-out;
+}
+
+.breathing-inhale {
+  transform: scale(1.3);
+}
+
+.breathing-exhale {
+  transform: scale(0.85);
+}
+
+.act-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.act-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+.act-dot.green { background: var(--green); }
+.act-dot.blue { background: var(--blue); }
+.act-dot.yellow { background: var(--yellow); }
+</style>
+</head>
+<body>
+
+<!-- ==================== DESKTOP SCREEN DESIGN LAYOUT ==================== -->
+<div class="desktop-interface">
+  <!-- Left Side Navigation Bar -->
+  <aside class="desk-sidebar">
+    <div>
+      <div class="desk-logo">
+        <i class="fas fa-shield-heart text-2xl"></i>
+        <span class="font-extrabold tracking-tight">resQ</span>
+      </div>
+      <nav class="desk-nav">
+        <button class="desk-nav-btn active" onclick="switchDeskTab('dashboard', this)">
+          <i class="fas fa-chart-line text-lg"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="desk-nav-btn" onclick="switchDeskTab('vault', this)">
+          <i class="fas fa-folder-open text-lg"></i>
+          <span>My Vault</span>
+        </button>
+        <button class="desk-nav-btn" onclick="switchDeskTab('history', this)">
+          <i class="fas fa-clock-rotate-left text-lg"></i>
+          <span>Timeline</span>
+        </button>
+        <button class="desk-nav-btn" onclick="switchDeskTab('uploader', this)">
+          <i class="fas fa-cloud-arrow-up text-lg"></i>
+          <span>Uploader</span>
+        </button>
+        <button class="desk-nav-btn" onclick="switchDeskTab('settings', this)">
+          <i class="fas fa-user-gear text-lg"></i>
+          <span>Profile Settings</span>
+        </button>
+      </nav>
+    </div>
+    <div class="flex flex-col gap-4">
+      <button class="btn-outline w-full justify-center text-sm py-2" onclick="toggleTheme()">
+        <i class="fas fa-circle-half-stroke"></i>
+        <span>Toggle Theme</span>
+      </button>
+      <div class="text-[11px] text-center text-slate-400">
+        <span>HIPAA Compliant System</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Widescreen Content Window -->
+  <main class="desk-main">
+    <header class="desk-header">
+      <div>
+        <h1 id="desk-welcome-title" class="text-3xl tracking-tight mb-1 font-bold">Welcome Back, Ananya</h1>
+        <p class="text-slate-400 text-sm">Your medical data is securely stored and decrypted locally on this browser.</p>
+      </div>
+      <div class="desk-user-actions">
+        <div class="desk-search">
+          <i class="fas fa-search text-slate-400"></i>
+          <input type="text" placeholder="Query secure health records..." oninput="searchGlobalRecords(this.value)">
+        </div>
+        <button class="w-10 h-10 rounded-full flex items-center justify-center border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800" onclick="toggleTheme()">
+          <i class="fas fa-circle-half-stroke"></i>
+        </button>
+        <div class="w-11 h-11 rounded-full overflow-hidden border-2 border-brand-blue cursor-pointer bg-slate-100" onclick="switchDeskTab('settings')">
+          <div class="w-full h-full relative" id="desk-avatar-container">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Desktop Tabs Content Wrapper -->
+    <div id="desk-tab-dashboard" class="desk-tab-panel">
+      <div class="desk-workspace">
+        <div class="flex flex-col gap-6">
+          <!-- Live Telemetry Readouts -->
+          <div class="vitals-grid">
+            <div class="vital-card glass-card">
+              <div class="vital-icon heart"><i class="fas fa-heart"></i></div>
+              <span class="vital-val heart-val">74</span>
+              <span class="vital-label">Heart Rate (bpm)</span>
+            </div>
+            <div class="vital-card glass-card">
+              <div class="vital-icon pressure"><i class="fas fa-gauge"></i></div>
+              <span class="vital-val bp-val">120/80</span>
+              <span class="vital-label">Blood Pressure</span>
+            </div>
+            <div class="vital-card glass-card">
+              <div class="vital-icon oxygen"><i class="fas fa-lungs"></i></div>
+              <span class="vital-val oxygen-val">99%</span>
+              <span class="vital-label">Oxygen Sat.</span>
+            </div>
+            <div class="vital-card glass-card">
+              <div class="vital-icon sugar"><i class="fas fa-vial"></i></div>
+              <span class="vital-val sugar-val">94</span>
+              <span class="vital-label">Blood Sugar</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Vault Grid -->
+          <div>
+            <h3 class="text-xl mb-4 font-bold text-slate-800 dark:text-slate-100">Core Medical Vault Sections</h3>
+            <div class="vault-grid" id="desk-vault-grid">
+              <!-- Instantiated by JS -->
+            </div>
+          </div>
+
+          <!-- Latest Uploads Quick Table -->
+          <div class="glass-card p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-bold">Latest Encrypted Records</h3>
+              <button class="btn-primary py-2 text-sm" onclick="switchDeskTab('uploader')">
+                <i class="fas fa-plus"></i> Add Document
+              </button>
+            </div>
+            <div id="desk-latest-files-list" class="flex flex-col gap-2">
+              <!-- Instantiated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side Widgets Sidebar -->
+        <aside class="flex flex-col gap-6">
+          <!-- Profile Quick Widget -->
+          <div class="glass-card profile-card-widget">
+            <div class="text-center">
+              <div class="profile-widget-avatar-container cursor-pointer bg-slate-100 rounded-full overflow-hidden" onclick="triggerProfilePictureUpdate()">
+                <div class="w-full h-full relative" id="desk-widget-avatar-container">
+                  <!-- Rendered by JS -->
+                </div>
+                <div class="profile-widget-avatar-edit"><i class="fas fa-camera"></i></div>
+              </div>
+              <h3 class="text-lg font-bold mt-3 global-sync-name">Ananya Sharma</h3>
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Verified Patient Profile</span>
+            </div>
+            <div class="profile-fields-list" id="desk-profile-fields-list">
+              <!-- Dynamic fields -->
+            </div>
+            <button class="btn-outline w-full justify-center text-sm py-2" id="desk-edit-profile-btn" onclick="toggleGlobalEditMode(this)">
+              <i class="fas fa-edit"></i> Edit Medical Card
+            </button>
+          </div>
+
+          <!-- Calmness space / breathing visualizer -->
+          <div class="glass-card p-5 text-center">
+            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3"><i class="fas fa-wind text-brand-blue"></i> Guided Breathing Space</h4>
+            <div class="breathing-circle-wrap">
+              <div class="breathing-ring"></div>
+              <div class="breathing-circle" id="desk-breathingCircle">Press Start</div>
+            </div>
+            <div class="flex justify-center gap-2 mt-2">
+              <button class="btn-primary text-xs py-1 px-3" onclick="startBreathing('desk')">Start</button>
+              <button class="btn-outline text-xs py-1 px-3" onclick="stopBreathing('desk')">Stop</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Additional Widescreen Tab Views -->
+    <div id="desk-tab-vault" class="desk-tab-panel" style="display:none;">
+      <h2 class="text-2xl font-bold mb-1">Interactive Document Vault</h2>
+      <p class="text-slate-400 text-sm mb-6">Explore, download and manage categorized healthcare records with local AES-256 decryption.</p>
+      <div class="vault-grid" id="desk-vault-full-grid"></div>
+    </div>
+
+    <div id="desk-tab-history" class="desk-tab-panel" style="display:none;">
+      <h2 class="text-2xl font-bold mb-1">Medical Timeline Index</h2>
+      <p class="text-slate-400 text-sm mb-6">Chronological logs of your hospital visits, diagnostic events, and therapeutic interventions.</p>
+      <div class="timeline-list" id="desk-timeline-list"></div>
+    </div>
+
+    <div id="desk-tab-uploader" class="desk-tab-panel" style="display:none;">
+      <h2 class="text-2xl font-bold mb-1">Secure Document Ingestion</h2>
+      <p class="text-slate-400 text-sm mb-6">Drag and drop files to encrypt them instantly in the secure local sandbox storage sandbox.</p>
+      <div class="glass-card p-8 max-w-xl">
+        <label class="text-sm font-semibold mb-2 block">Choose Target Vault Category:</label>
+        <select id="desk-upload-cat" class="edit-input mb-4 p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+          <option value="prescriptions">Prescriptions</option>
+          <option value="labReports">Lab Reports</option>
+          <option value="xrays">X-Rays</option>
+          <option value="insurance">Insurance Documents</option>
+          <option value="vaccination">Vaccinations</option>
+          <option value="mri">MRI Reports</option>
+          <option value="ecg">ECG Records</option>
+        </select>
+        <div class="upload-drag-box" onclick="triggerDesktopFileSelect()">
+          <i class="fas fa-cloud-arrow-up text-4xl text-brand-blue mb-3 block"></i>
+          <p class="font-bold text-sm">Drag file here or click to open computer files</p>
+          <span class="text-xs text-slate-400 mt-1 block">Supports PDF, JPEG, PNG up to 50MB</span>
+          <input type="file" id="desk-file-input" class="hidden" onchange="handleFileIngestion(this, 'desk-upload-cat', 'desk-transfers-progress-container')">
+        </div>
+        <div id="desk-transfers-progress-container" class="mt-4"></div>
+      </div>
+    </div>
+
+    <div id="desk-tab-settings" class="desk-tab-panel" style="display:none;">
+      <h2 class="text-2xl font-bold mb-1">Identity & Patient Profile Configurations</h2>
+      <p class="text-slate-400 text-sm mb-6">Configure security variables, identity markers, and personal dimensions synced to local vault.</p>
+      <div class="glass-card p-6 max-w-2xl">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Full Name</label>
+            <input type="text" class="edit-input" id="setting-name" value="Ananya Sharma" oninput="syncSettingProfile()">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Age Span</label>
+            <input type="text" class="edit-input" id="setting-age" value="28 Years" oninput="syncSettingProfile()">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Blood Metric</label>
+            <input type="text" class="edit-input" id="setting-blood" value="B+" oninput="syncSettingProfile()">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Height Index</label>
+            <input type="text" class="edit-input" id="setting-height" value="165 cm" oninput="syncSettingProfile()">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Weight Metric</label>
+            <input type="text" class="edit-input" id="setting-weight" value="58 kg" oninput="syncSettingProfile()">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Emergency Line</label>
+            <input type="text" class="edit-input" id="setting-contact" value="+91 98765 43210" oninput="syncSettingProfile()">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-slate-400 block mb-1">Allergies & Intolerances</label>
+          <input type="text" class="edit-input" id="setting-allergies" value="Penicillin, Dust" oninput="syncSettingProfile()">
+        </div>
+        <button class="btn-primary" onclick="saveSettingChanges()"><i class="fas fa-floppy-disk"></i> Commit Security Changes</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<!-- ==================== MOBILE SCREEN DESIGN LAYOUT ==================== -->
+<div class="mobile-interface">
+  <!-- Mobile Status Header Bar -->
+  <header class="mobile-header">
+    <div class="mobile-logo">
+      <i class="fas fa-shield-heart"></i>
+      <span class="font-extrabold text-lg">resQ</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" onclick="toggleTheme()">
+        <i class="fas fa-circle-half-stroke"></i>
+      </button>
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-brand-blue cursor-pointer bg-slate-100" onclick="switchMobileNav('profile', document.getElementById('mob-nav-profile'))">
+        <div class="w-full h-full relative" id="mob-avatar-container">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Inner Contents Container -->
+  <div class="mobile-content">
+    <!-- Tab Section: Dashboard Overview -->
+    <div id="mob-panel-dashboard" class="mobile-panel-section">
+      <div class="mb-4">
+        <h2 class="text-xl font-extrabold">Hello, <span class="global-sync-name text-brand-blue">Ananya</span></h2>
+        <p class="text-xs text-slate-400">Vitals telemetry pipeline is stable.</p>
+      </div>
+
+      <div class="vitals-grid">
+        <div class="vital-card glass-card p-3">
+          <div class="vital-icon heart w-8 h-8 text-sm mb-1"><i class="fas fa-heart"></i></div>
+          <span class="vital-val heart-val text-lg">74</span>
+          <span class="vital-label text-[10px]">bpm</span>
+        </div>
+        <div class="vital-card glass-card p-3">
+          <div class="vital-icon pressure w-8 h-8 text-sm mb-1"><i class="fas fa-gauge"></i></div>
+          <span class="vital-val bp-val text-lg">120/80</span>
+          <span class="vital-label text-[10px]">BP</span>
+        </div>
+        <div class="vital-card glass-card p-3">
+          <div class="vital-icon oxygen w-8 h-8 text-sm mb-1"><i class="fas fa-lungs"></i></div>
+          <span class="vital-val oxygen-val text-lg">99%</span>
+          <span class="vital-label text-[10px]">SpO2</span>
+        </div>
+      </div>
+
+      <!-- Quick Backup Diagnostics Banner -->
+      <div class="glass-card p-4 mb-6 bg-gradient-to-br from-brand-blue/10 to-brand-blue/5">
+        <h4 class="text-xs font-bold mb-1"><i class="fas fa-shield-halved text-brand-blue"></i> Cryptographic Backups Active</h4>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Medical files are compressed using secure browser memory blocks.</p>
+      </div>
+
+      <!-- Quick Vault Folder Grid -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-sm font-bold">Quick Vault Folders</h3>
+          <button class="text-xs text-brand-blue font-bold" onclick="switchMobileNav('vault', document.getElementById('mob-nav-vault'))">View All</button>
+        </div>
+        <div class="vault-grid" id="mob-vault-quick-grid">
+          <!-- Instantiated by JS -->
+        </div>
+      </div>
+
+      <!-- Guided Breathe Widget (Mobile Layout) -->
+      <div class="glass-card p-4 text-center">
+        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 mb-2"><i class="fas fa-wind text-brand-blue"></i> Guided Breathing Space</h4>
+        <div class="breathing-circle-wrap">
+          <div class="breathing-ring"></div>
+          <div class="breathing-circle" id="mob-breathingCircle" style="width:90px; height:90px; font-size:11px;">Press Start</div>
+        </div>
+        <div class="flex justify-center gap-2 mt-1">
+          <button class="btn-primary text-[10px] py-1 px-3" onclick="startBreathing('mob')">Start</button>
+          <button class="btn-outline text-[10px] py-1 px-3" onclick="stopBreathing('mob')">Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Section: Vault Categories Grid -->
+    <div id="mob-panel-vault" class="mobile-panel-section" style="display:none;">
+      <h2 class="text-xl font-bold mb-1">Your Medical Vault</h2>
+      <p class="text-xs text-slate-400 mb-4">Tap on any folder category below to inspect, view, download or remove files.</p>
+      <div class="vault-grid" id="mob-vault-full-grid"></div>
+    </div>
+
+    <!-- Tab Section: Document Transference / Upload -->
+    <div id="mob-panel-upload" class="mobile-panel-section" style="display:none;">
+      <h2 class="text-xl font-bold mb-1">Upload Records</h2>
+      <p class="text-xs text-slate-400 mb-4">Choose a folder destination and snap or transfer clinic files instantly.</p>
+      <div class="glass-card p-4">
+        <label class="text-xs font-bold text-slate-500 mb-1 block">Destination Category</label>
+        <select id="mob-upload-cat" class="edit-input mb-4 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+          <option value="prescriptions">Prescriptions</option>
+          <option value="labReports">Lab Reports</option>
+          <option value="xrays">X-Rays</option>
+          <option value="insurance">Insurance Documents</option>
+          <option value="vaccination">Vaccinations</option>
+          <option value="mri">MRI Reports</option>
+          <option value="ecg">ECG Records</option>
+        </select>
+        <div class="upload-drag-box" onclick="triggerMobileFileSelect()">
+          <i class="fas fa-camera text-3xl text-brand-blue mb-2 block"></i>
+          <p class="font-bold text-xs">Snap Photo or Choose File</p>
+          <input type="file" id="mob-file-input" class="hidden" onchange="handleFileIngestion(this, 'mob-upload-cat', 'mob-transfers-progress-container')">
+        </div>
+        <div id="mob-transfers-progress-container" class="mt-4"></div>
+      </div>
+    </div>
+
+    <!-- Tab Section: Profile Settings & Activity -->
+    <div id="mob-panel-profile" class="mobile-panel-section" style="display:none;">
+      <div class="glass-card profile-card-widget">
+        <div class="text-center">
+          <div class="profile-widget-avatar-container bg-slate-100 rounded-full overflow-hidden" onclick="triggerProfilePictureUpdate()">
+            <div class="w-full h-full relative" id="mob-widget-avatar-container">
+              <!-- Rendered by JS -->
+            </div>
+            <div class="profile-widget-avatar-edit" style="width:24px; height:24px; font-size:10px;"><i class="fas fa-camera"></i></div>
+          </div>
+          <h3 class="text-base font-bold mt-2 global-sync-name">Ananya Sharma</h3>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Patient ID Card</span>
+        </div>
+        <div class="profile-fields-list" id="mob-profile-fields-list">
+          <!-- Populated by JS -->
+        </div>
+        <button class="btn-outline w-full justify-center text-xs py-2" id="mob-edit-profile-btn" onclick="toggleGlobalEditMode(this)">
+          <i class="fas fa-edit"></i> Edit Medical Card
+        </button>
+      </div>
+
+      <!-- Activity Logs Widget -->
+      <div class="glass-card p-4 mt-4">
+        <h4 class="text-xs font-bold mb-3"><i class="fas fa-list-ul text-brand-blue mr-1"></i> Recent Action Activity</h4>
+        <div class="flex flex-col gap-3" id="mob-recent-logs-list">
+          <!-- Dynamic Action Logs -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Touch-Optimized Mobile Bottom Tab Bar -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-item active" id="mob-nav-dashboard" onclick="switchMobileNav('dashboard', this)">
+      <i class="fas fa-house"></i>
+      <span>Overview</span>
+    </button>
+    <button class="mobile-nav-item" id="mob-nav-vault" onclick="switchMobileNav('vault', this)">
+      <i class="fas fa-folder-open"></i>
+      <span>Vault</span>
+    </button>
+    <button class="mobile-nav-item" id="mob-nav-upload" onclick="switchMobileNav('upload', this)">
+      <i class="fas fa-cloud-arrow-up"></i>
+      <span>Upload</span>
+    </button>
+    <button class="mobile-nav-item" id="mob-nav-profile" onclick="switchMobileNav('profile', this)">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </button>
+  </nav>
+</div>
+
+
+<!-- ==================== COMMON OVERLAYS & MODAL SHEET COMPONENTS ==================== -->
+<!-- SYSTEM TOAST OVERLAYS -->
+<div class="toast-box" id="toastBox"></div>
+
+<!-- COMPRESSED FOLDER SHEET OVERLAY -->
+<div class="modal-overlay" id="categoryModalOverlay" onclick="closeCategoryModal()"></div>
+<div class="modal glass-card" id="categoryModal">
+  <div class="modal-header">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg flex items-center justify-center text-brand-blue bg-blue-50 dark:bg-slate-800">
+        <i class="fas fa-folder-open" id="catModalIcon"></i>
+      </div>
+      <div>
+        <h3 id="catModalTitle" class="text-base font-bold">Category Documents</h3>
+        <p class="text-[10px] text-slate-400">Decrypted Local Files Container</p>
+      </div>
+    </div>
+    <button class="modal-close-btn" onclick="closeCategoryModal()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="modal-body max-h-[50vh] overflow-y-auto" id="catModalBody">
+    <!-- List of encrypted file elements -->
+  </div>
+</div>
+
+<!-- SECURE LOCAL PAYLOAD FILE READER / VIEW OVERLAY -->
+<div class="modal-overlay" id="viewModalOverlay" onclick="closeViewModal()" style="z-index: 2500;"></div>
+<div class="modal glass-card" id="viewModal" style="z-index: 2501; max-width: 480px;">
+  <div class="modal-header">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-file-shield text-brand-blue text-lg"></i>
+      <h3 class="text-sm font-bold">Local File Inspector</h3>
+    </div>
+    <button class="modal-close-btn" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="modal-body text-center p-6">
+    <div id="inspectorIconContainer" class="text-5xl text-brand-blue mb-4"></div>
+    <h4 id="inspectorFileName" class="text-base font-bold mb-2 truncate">document.pdf</h4>
+    <p class="text-xs text-slate-400 leading-relaxed mb-6">
+      Verified decrypted container. Content security checks passed. Certified against cryptographic SHA-256 signatures.
+    </p>
+    <div class="flex gap-3 justify-center">
+      <button class="btn-primary text-xs py-2 px-4" id="inspectorDownloadBtn">
+        <i class="fas fa-download"></i> Save/Download File
+      </button>
+      <button class="btn-outline text-xs py-2 px-4" onclick="closeViewModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DYNAMIC REALTIME HEALTH COMPANION CHAT SYSTEM (JUHI) -->
+<div class="chat-fab" id="chatFab" onclick="toggleChatbot()">
+  <div class="fab-pulse"></div>
+  <i class="fas fa-comment-medical text-white"></i>
+  <span class="fab-badge">1</span>
+</div>
+
+<div class="chatbot-panel glass-card" id="chatbotWindow">
+  <div class="chatbot-header">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-base">
+        <i class="fas fa-brain-circuit"></i>
+      </div>
+      <div>
+        <h4 class="text-sm font-bold leading-tight">JUHI</h4>
+        <span class="text-[10px] opacity-80 flex items-center gap-1">
+          <i class="fas fa-circle text-emerald-400 text-[6px]"></i> Virtual Health Companion
+        </span>
+      </div>
+    </div>
+    <button onclick="toggleChatbot()" class="text-white text-base"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="chatbot-msgs" id="chatbotMsgs">
+    <!-- Conversational outputs injected here -->
+  </div>
+  <!-- Quick action prompts inside chat panel -->
+  <div class="flex gap-1 overflow-x-auto p-2 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 scrollbar-hide">
+    <button class="qr-btn text-[10px] bg-slate-50 dark:bg-slate-800 border px-3 py-1 rounded-full whitespace-nowrap" onclick="sendChatQuery('Verify Vitals Status')">📊 Vitals Assessment</button>
+    <button class="qr-btn text-[10px] bg-slate-50 dark:bg-slate-800 border px-3 py-1 rounded-full whitespace-nowrap" onclick="sendChatQuery('Check asthma conditions')">🌬️ Asthma Guidance</button>
+    <button class="qr-btn text-[10px] bg-slate-50 dark:bg-slate-800 border px-3 py-1 rounded-full whitespace-nowrap" onclick="sendChatQuery('Begin calming breathing session')">🧘 Breathe Session</button>
+  </div>
+  <div class="chatbot-input-bar">
+    <input type="text" id="chatInputField" placeholder="Describe symptom changes..." onkeydown="if(event.key==='Enter')handleChatInputSend()">
+    <button class="send-btn w-9 h-9 rounded-full bg-brand-blue flex items-center justify-center text-white shrink-0" onclick="handleChatInputSend()">
+      <i class="fas fa-paper-plane text-xs"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Hidden Avatar File Picker -->
+<input type="file" id="globalAvatarFileInput" accept="image/*" class="hidden" onchange="handleGlobalAvatarChange(this)">
+
+
+<!-- ==================== REACTIVE JAVASCRIPT SYSTEM ENGINE ==================== -->
+<script>
+const resqState = {
+  profile: {
+    name: "Ananya Sharma",
+    age: "28 Years",
+    blood: "B+",
+    height: "165 cm",
+    weight: "58 kg",
+    contact: "+91 98765 43210",
+    allergies: "Penicillin, Dust",
+    chronic: "Mild Asthma",
+    medications: "Montelukast 10mg",
+    // Premium professional headshot of a female healthcare executive/physician as requested
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256&h=256"
+  },
+  vitals: {
+    heartRate: "74",
+    bloodPressure: "120/80",
+    oxygen: "99%",
+    sugar: "94",
+    temperature: "98.6"
+  },
+  categories: {
+    prescriptions: {
+      title: "Prescriptions",
+      icon: "fas fa-prescription-bottle-alt",
+      themeClass: "prescriptions",
+      files: [
+        { id: "p1", name: "Montelukast_10mg_Dec2024.pdf", date: "Dec 15, 2024", size: "0.8 MB" },
+        { id: "p2", name: "Salbutamol_Inhaler_Sep2024.pdf", date: "Sep 10, 2024", size: "1.1 MB" },
+        { id: "p3", name: "Vitamin_D3_Supplement_Nov2023.pdf", date: "Nov 20, 2023", size: "0.6 MB" }
+      ]
+    },
+    labReports: {
+      title: "Lab Reports",
+      icon: "fas fa-flask",
+      themeClass: "labReports",
+      files: [
+        { id: "l1", name: "CBC_BloodTest_Dec2024.pdf", date: "Dec 15, 2024", size: "2.4 MB" },
+        { id: "l2", name: "LipidProfile_Nov2023.pdf", date: "Nov 22, 2023", size: "1.8 MB" }
+      ]
+    },
+    xrays: {
+      title: "X-Rays",
+      icon: "fas fa-x-ray",
+      themeClass: "xrays",
+      files: [
+        { id: "x1", name: "Chest_Xray_Oct2024.jpg", date: "Oct 22, 2024", size: "5.1 MB" }
+      ]
+    },
+    insurance: {
+      title: "Insurance",
+      icon: "fas fa-file-contract",
+      themeClass: "insurance",
+      files: [
+        { id: "i1", name: "Health_Policy_2025.pdf", date: "Jan 1, 2025", size: "3.2 MB" }
+      ]
+    },
+    vaccination: {
+      title: "Vaccinations",
+      icon: "fas fa-syringe",
+      themeClass: "vaccination",
+      files: [
+        { id: "v1", name: "COVID_Booster_Aug2024.pdf", date: "Aug 5, 2024", size: "0.5 MB" }
+      ]
+    },
+    mri: {
+      title: "MRI Reports",
+      icon: "fas fa-brain",
+      themeClass: "mri",
+      files: [
+        { id: "m1", name: "Brain_MRI_Jul2024.pdf", date: "Jul 18, 2024", size: "12.4 MB" }
+      ]
+    },
+    ecg: {
+      title: "ECG Reports",
+      icon: "fas fa-heartbeat",
+      themeClass: "ecg",
+      files: [
+        { id: "ec1", name: "ECG_Routine_Sep2024.pdf", date: "Sep 18, 2024", size: "1.2 MB" }
+      ]
+    }
+  },
+  timeline: [
+    { date: "December 2024", title: "Apollo Hospital Assessment", desc: "Standard clinical health checkup and lipid test sequence completed. Heart vitals normal.", tag: "routine" },
+    { date: "August 2024", title: "Vaccination — COVID Booster", desc: "Received COVID-19 booster dose at local clinic center.", tag: "vaccine" },
+    { date: "March 2023", title: "Emergency — Asthma Attack", desc: "Severe acute asthma flare-up. Nebulization sequence applied at Fortis emergency room.", tag: "emergency-tag" }
+  ],
+  activityLog: [
+    { text: "Montelukast_10mg_Dec2024.pdf encrypted in client storage", time: "Today, 11:05 AM", type: "green" },
+    { text: "Chest_Xray_Oct2024.jpg local signature check passed", time: "Oct 22, 2024", type: "blue" },
+    { text: "Biometric token authenticated session", time: "Today, 9:45 AM", type: "yellow" }
+  ]
+};
+
+window.addEventListener('load', () => {
+  renderAllSystemPanels();
+  setTimeout(() => {
+    addBotConversationMessage("Welcome, I'm **JUHI**, your local secure resQ assistant. Your clinical files, diagnostics, and vital statistics cards are loaded and fully encrypted.");
+  }, 1000);
+});
+
+function renderAllSystemPanels() {
+  syncProfileDataAcrossLayouts();
+  syncVitalsToBothViews();
+  renderDynamicVaultGrids();
+  renderTimelineIndex();
+  renderActivityLogWidget();
+}
+
+// Highly professional inline SVG template instead of playful characters
+function getProfessionalAvatarFallbackSVG() {
+  return `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-slate-900 p-2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+    </svg>
+  `;
+}
+
+function renderAvatarImage(targetElementId) {
+  const container = document.getElementById(targetElementId);
+  if (!container) return;
+
+  if (resqState.profile.avatar && resqState.profile.avatar.trim() !== "") {
+    container.innerHTML = `
+      <img src="${resqState.profile.avatar}" 
+           alt="Patient Portrait" 
+           class="w-full h-full object-cover"
+           onerror="handleAvatarLoadError('${targetElementId}')" />
+    `;
+  } else {
+    container.innerHTML = getProfessionalAvatarFallbackSVG();
+  }
+}
+
+function handleAvatarLoadError(targetElementId) {
+  const container = document.getElementById(targetElementId);
+  if (container) {
+    container.innerHTML = getProfessionalAvatarFallbackSVG();
+  }
+}
+
+function syncProfileDataAcrossLayouts() {
+  document.querySelectorAll('.global-sync-name').forEach(el => {
+    el.textContent = resqState.profile.name;
+  });
+  
+  const deskWelcome = document.getElementById('desk-welcome-title');
+  if (deskWelcome) {
+    deskWelcome.textContent = `Welcome Back, ${resqState.profile.name.split(' ')[0]}`;
+  }
+
+  // Bind avatars with custom professional loading and elegant system fallbacks
+  renderAvatarImage('desk-avatar-container');
+  renderAvatarImage('desk-widget-avatar-container');
+  renderAvatarImage('mob-avatar-container');
+  renderAvatarImage('mob-widget-avatar-container');
+
+  const deskFields = document.getElementById('desk-profile-fields-list');
+  if (deskFields) deskFields.innerHTML = generateProfileFieldRowsHTML('desk');
+
+  const mobFields = document.getElementById('mob-profile-fields-list');
+  if (mobFields) mobFields.innerHTML = generateProfileFieldRowsHTML('mob');
+
+  // Load setup data values to configuration panel
+  const setN = document.getElementById('setting-name');
+  const setA = document.getElementById('setting-age');
+  const setB = document.getElementById('setting-blood');
+  const setH = document.getElementById('setting-height');
+  const setW = document.getElementById('setting-weight');
+  const setC = document.getElementById('setting-contact');
+  const setAll = document.getElementById('setting-allergies');
+  
+  if (setN) setN.value = resqState.profile.name;
+  if (setA) setA.value = resqState.profile.age;
+  if (setB) setB.value = resqState.profile.blood;
+  if (setH) setH.value = resqState.profile.height;
+  if (setW) setW.value = resqState.profile.weight;
+  if (setC) setC.value = resqState.profile.contact;
+  if (setAll) setAll.value = resqState.profile.allergies;
+}
+
+function generateProfileFieldRowsHTML(prefix) {
+  const fields = [
+    { label: "Age", value: resqState.profile.age, key: "age" },
+    { label: "Blood Metric", value: resqState.profile.blood, key: "blood" },
+    { label: "Height", value: resqState.profile.height, key: "height" },
+    { label: "Weight", value: resqState.profile.weight, key: "weight" },
+    { label: "Emergency Line", value: resqState.profile.contact, key: "contact" },
+    { label: "Allergies", value: resqState.profile.allergies, key: "allergies" },
+    { label: "Chronic Diseases", value: resqState.profile.chronic, key: "chronic" }
+  ];
+
+  return fields.map(f => `
+    <div class="profile-field-item">
+      <label>${f.label}</label>
+      <strong id="${prefix}-field-val-${f.key}" class="text-slate-800 dark:text-slate-100">${f.value}</strong>
+    </div>
+  `).join('');
+}
+
+function syncVitalsToBothViews() {
+  document.querySelectorAll('.heart-val').forEach(el => el.textContent = resqState.vitals.heartRate);
+  document.querySelectorAll('.bp-val').forEach(el => el.textContent = resqState.vitals.bloodPressure);
+  document.querySelectorAll('.oxygen-val').forEach(el => el.textContent = resqState.vitals.oxygen);
+  document.querySelectorAll('.sugar-val').forEach(el => el.textContent = resqState.vitals.sugar);
+}
+
+function renderDynamicVaultGrids() {
+  const deskGrid = document.getElementById('desk-vault-grid');
+  const deskFullGrid = document.getElementById('desk-vault-full-grid');
+  const mobQuickGrid = document.getElementById('mob-vault-quick-grid');
+  const mobFullGrid = document.getElementById('mob-vault-full-grid');
+
+  let htmlStr = "";
+  for (const key in resqState.categories) {
+    const cat = resqState.categories[key];
+    htmlStr += `
+      <div class="glass-card vault-card" onclick="openCategorySheet('${key}')">
+        <div class="vault-card-icon ${cat.themeClass}">
+          <i class="${cat.icon}"></i>
+        </div>
+        <h4 class="font-bold text-slate-800 dark:text-slate-100">${cat.title}</h4>
+        <span>${cat.files.length} Item${cat.files.length === 1 ? '' : 's'}</span>
+      </div>
+    `;
+  }
+
+  if (deskGrid) deskGrid.innerHTML = htmlStr;
+  if (deskFullGrid) deskFullGrid.innerHTML = htmlStr;
+  if (mobQuickGrid) mobQuickGrid.innerHTML = htmlStr;
+  if (mobFullGrid) mobFullGrid.innerHTML = htmlStr;
+
+  renderDesktopLatestFileList();
+}
+
+function renderDesktopLatestFileList() {
+  const container = document.getElementById('desk-latest-files-list');
+  if (!container) return;
+
+  let sortedArr = [];
+  for (const catKey in resqState.categories) {
+    const cat = resqState.categories[catKey];
+    cat.files.forEach(f => {
+      sortedArr.push({ ...f, catKey, catName: cat.title });
+    });
+  }
+
+  const previewList = sortedArr.slice(0, 4);
+
+  container.innerHTML = previewList.map(f => `
+    <div class="uploaded-row-item">
+      <i class="${f.name.endsWith('.pdf') ? 'fas fa-file-pdf text-red-500' : 'fas fa-file-image text-blue-500'}"></i>
+      <div class="uploaded-row-details">
+        <span class="text-slate-800 dark:text-slate-100">${f.name}</span>
+        <small>${f.catName} · ${f.size} · Secured</small>
+      </div>
+      <div class="row-actions">
+        <button class="row-action-btn" onclick="openFileInspector('${f.id}', '${f.name}')" title="Inspect File"><i class="fas fa-eye"></i></button>
+        <button class="row-action-btn" onclick="initiateFileDownload('${f.name}')" title="Download"><i class="fas fa-download"></i></button>
+        <button class="row-action-btn hover:bg-red-500 hover:text-white" onclick="purgeFileFromScope('${f.catKey}', '${f.id}')" title="Purge File"><i class="fas fa-trash-can"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTimelineIndex() {
+  const container = document.getElementById('desk-timeline-list');
+  if (!container) return;
+
+  container.innerHTML = resqState.timeline.map(t => `
+    <div class="timeline-card glass-card">
+      <div class="timeline-dot-anchor"></div>
+      <span class="timeline-date"><i class="far fa-calendar-alt mr-1"></i> ${t.date}</span>
+      <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mb-1">${t.title}</h4>
+      <p class="text-xs text-slate-500 leading-relaxed">${t.desc}</p>
+    </div>
+  `).join('');
+}
+
+function renderActivityLogWidget() {
+  const container = document.getElementById('mob-recent-logs-list');
+  if (!container) return;
+
+  container.innerHTML = resqState.activityLog.map(l => `
+    <div class="act-item">
+      <div class="act-dot ${l.type}"></div>
+      <div>
+        <p class="text-xs text-slate-700 dark:text-slate-300 font-semibold">${l.text}</p>
+        <span class="text-[10px] text-slate-400 block mt-0.5">${l.time}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function switchDeskTab(tabId, btn) {
+  document.querySelectorAll('.desk-tab-panel').forEach(panel => {
+    panel.style.display = 'none';
+  });
+  const target = document.getElementById(`desk-tab-${tabId}`);
+  if (target) target.style.display = 'block';
+
+  document.querySelectorAll('.desk-nav-btn').forEach(b => {
+    b.classList.remove('active');
+  });
+  if (btn) btn.classList.add('active');
+}
+
+function switchMobileNav(panelId, btn) {
+  document.querySelectorAll('.mobile-panel-section').forEach(sec => {
+    sec.style.display = 'none';
+  });
+  const target = document.getElementById(`mob-panel-${panelId}`);
+  if (target) target.style.display = 'block';
+
+  document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  if (btn) btn.classList.add('active');
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const target = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', target);
+  if (target === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  showSystemToast(`Switched theme setting to ${target}`, 'info');
+}
+
+let isEditModeActive = false;
+
+function toggleGlobalEditMode(btn) {
+  if (!isEditModeActive) {
+    isEditModeActive = true;
+    btn.innerHTML = `<i class="fas fa-floppy-disk"></i> Commit Data`;
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#fff';
+
+    transformLabelsToInputs('desk');
+    transformLabelsToInputs('mob');
+    showSystemToast("Data fields ready for inline changes", "info");
+  } else {
+    isEditModeActive = false;
+    btn.innerHTML = `<i class="fas fa-edit"></i> Edit Medical Card`;
+    btn.style.background = '';
+    btn.style.color = '';
+
+    commitInputsToState('desk');
+    commitInputsToState('mob');
+    renderAllSystemPanels();
+    showSystemToast("Changes saved locally on your hardware", "success");
+  }
+}
+
+function transformLabelsToInputs(prefix) {
+  const fields = ["age", "blood", "height", "weight", "contact", "allergies", "chronic"];
+  fields.forEach(f => {
+    const el = document.getElementById(`${prefix}-field-val-${f}`);
+    if (el) {
+      const current = el.textContent;
+      el.innerHTML = `<input type="text" class="edit-input py-1 text-xs" id="${prefix}-input-val-${f}" value="${current}">`;
+    }
+  });
+}
+
+function commitInputsToState(prefix) {
+  const fields = ["age", "blood", "height", "weight", "contact", "allergies", "chronic"];
+  fields.forEach(f => {
+    const input = document.getElementById(`${prefix}-input-val-${f}`);
+    if (input) {
+      const val = input.value.trim();
+      if (f === 'contact') resqState.profile.contact = val;
+      else if (f === 'allergies') resqState.profile.allergies = val;
+      else if (f === 'chronic') resqState.profile.chronic = val;
+      else resqState.profile[f] = val;
+    }
+  });
+}
+
+function syncSettingProfile() {
+  resqState.profile.name = document.getElementById('setting-name').value;
+  resqState.profile.age = document.getElementById('setting-age').value;
+  resqState.profile.blood = document.getElementById('setting-blood').value;
+  resqState.profile.height = document.getElementById('setting-height').value;
+  resqState.profile.weight = document.getElementById('setting-weight').value;
+  resqState.profile.contact = document.getElementById('setting-contact').value;
+  resqState.profile.allergies = document.getElementById('setting-allergies').value;
+
+  document.querySelectorAll('.global-sync-name').forEach(el => {
+    el.textContent = resqState.profile.name;
+  });
+}
+
+function saveSettingChanges() {
+  showSystemToast("Configuration baseline settings saved", "success");
+  renderAllSystemPanels();
+}
+
+function triggerProfilePictureUpdate() {
+  document.getElementById('globalAvatarFileInput').click();
+}
+
+function handleGlobalAvatarChange(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      resqState.profile.avatar = e.target.result;
+      renderAllSystemPanels();
+      showSystemToast("User avatar successfully updated", "success");
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+let currentSelectedCabinet = "";
+
+function openCategorySheet(catKey) {
+  currentSelectedCabinet = catKey;
+  const cat = resqState.categories[catKey];
+  if (!cat) return;
+
+  document.getElementById('catModalTitle').textContent = `${cat.title} Cabinet`;
+  document.getElementById('catModalIcon').className = cat.icon;
+
+  renderCategoryFilesList(catKey);
+
+  document.getElementById('categoryModalOverlay').classList.add('open');
+  document.getElementById('categoryModal').classList.add('open');
+}
+
+function renderCategoryFilesList(catKey) {
+  const container = document.getElementById('catModalBody');
+  const cat = resqState.categories[catKey];
+
+  if (!cat || cat.files.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8 text-slate-400">
+        <i class="fas fa-box-open text-3xl block mb-2"></i>
+        <p class="text-xs">No active documents saved inside this shelf.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = cat.files.map(f => `
+    <div class="uploaded-row-item bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+      <i class="${f.name.endsWith('.pdf') ? 'fas fa-file-pdf text-red-500' : 'fas fa-file-image text-blue-500'}"></i>
+      <div class="uploaded-row-details">
+        <span class="text-slate-800 dark:text-slate-100 text-xs">${f.name}</span>
+        <small class="text-[10px]">${f.date} · ${f.size}</small>
+      </div>
+      <div class="row-actions">
+        <button class="row-action-btn" onclick="openFileInspector('${f.id}', '${f.name}')"><i class="fas fa-eye"></i></button>
+        <button class="row-action-btn" onclick="initiateFileDownload('${f.name}')"><i class="fas fa-download"></i></button>
+        <button class="row-action-btn hover:bg-red-500 hover:text-white" onclick="purgeFileFromScope('${catKey}', '${f.id}')"><i class="fas fa-trash-can"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function closeCategoryModal() {
+  document.getElementById('categoryModalOverlay').classList.remove('open');
+  document.getElementById('categoryModal').classList.remove('open');
+}
+
+function openFileInspector(fileId, fileName) {
+  const isPDF = fileName.endsWith('.pdf');
+  const container = document.getElementById('inspectorIconContainer');
+  container.innerHTML = `<i class="${isPDF ? 'fas fa-file-pdf text-red-500' : 'fas fa-file-image text-blue-500'}"></i>`;
+  
+  document.getElementById('inspectorFileName').textContent = fileName;
+  document.getElementById('inspectorDownloadBtn').onclick = () => {
+    initiateFileDownload(fileName);
+  };
+
+  document.getElementById('viewModalOverlay').classList.add('open');
+  document.getElementById('viewModal').classList.add('open');
+}
+
+function closeViewModal() {
+  document.getElementById('viewModalOverlay').classList.remove('open');
+  document.getElementById('viewModal').classList.remove('open');
+}
+
+function initiateFileDownload(name) {
+  showSystemToast(`Decrypting and exporting: ${name}`, "success");
+  const a = document.createElement('a');
+  a.href = "#";
+  a.setAttribute('download', name);
+  document.body.appendChild(a);
+  setTimeout(() => { a.remove(); }, 100);
+}
+
+function purgeFileFromScope(catKey, fileId) {
+  if (resqState.categories[catKey]) {
+    resqState.categories[catKey].files = resqState.categories[catKey].files.filter(f => f.id !== fileId);
+    showSystemToast("File deleted and unlinked from memory partition", "info");
+    
+    renderAllSystemPanels();
+    if (document.getElementById('categoryModal').classList.contains('open') && currentSelectedCabinet === catKey) {
+      renderCategoryFilesList(catKey);
+    }
+  }
+}
+
+function triggerDesktopFileSelect() {
+  document.getElementById('desk-file-input').click();
+}
+
+function triggerMobileFileSelect() {
+  document.getElementById('mob-file-input').click();
+}
+
+function handleFileIngestion(input, categorySelectId, progressContainerId) {
+  if (!input.files || input.files.length === 0) return;
+
+  const selectedCat = document.getElementById(categorySelectId).value;
+  const file = input.files[0];
+  const sizeStr = (file.size / (1024 * 1024)).toFixed(1) + " MB";
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  const progressContainer = document.getElementById(progressContainerId);
+  const tempId = 'transfer-' + Math.random().toString(36).substr(2, 9);
+
+  progressContainer.innerHTML = `
+    <div class="uploaded-row-item" id="${tempId}">
+      <i class="fas fa-circle-notch fa-spin text-brand-blue"></i>
+      <div class="uploaded-row-details">
+        <span>Encrypting: ${file.name}...</span>
+        <div class="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-1 overflow-hidden">
+          <div id="bar-${tempId}" class="bg-brand-blue h-full" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  let pct = 0;
+  const loop = setInterval(() => {
+    pct += Math.random() * 25;
+    if (pct >= 100) {
+      pct = 100;
+      clearInterval(loop);
+
+      setTimeout(() => {
+        const row = document.getElementById(tempId);
+        if (row) row.remove();
+
+        resqState.categories[selectedCat].files.unshift({
+          id: tempId,
+          name: file.name,
+          date: dateStr,
+          size: sizeStr
+        });
+
+        resqState.activityLog.unshift({
+          text: `Encrypted ${file.name} to ${resqState.categories[selectedCat].title}`,
+          time: "Just Now",
+          type: "green"
+        });
+
+        showSystemToast(`${file.name} uploaded and encrypted successfully`, "success");
+        renderAllSystemPanels();
+      }, 500);
+    }
+    const bar = document.getElementById(`bar-${tempId}`);
+    if (bar) bar.style.width = pct + '%';
+  }, 100);
+}
+
+let isBreathingActive = false;
+let breathingLoopInterval = null;
+let respiratoryCyclePhase = 0;
+const breathingRhythmPhases = [
+  { action: "Inhale Air", seconds: 4, modifierClass: "breathing-inhale" },
+  { action: "Hold Breath", seconds: 4, modifierClass: "" },
+  { action: "Exhale Air", seconds: 4, modifierClass: "breathing-exhale" }
+];
+
+function startBreathing(prefix) {
+  isBreathingActive = true;
+  runGuidedBreathingPulse(prefix);
+}
+
+function runGuidedBreathingPulse(prefix) {
+  if (!isBreathingActive) return;
+
+  const targetCircle = document.getElementById(`${prefix}-breathingCircle`);
+  const currentPhaseConfig = breathingRhythmPhases[respiratoryCyclePhase % 3];
+
+  targetCircle.textContent = currentPhaseConfig.action;
+  targetCircle.className = `breathing-circle ${currentPhaseConfig.modifierClass}`;
+
+  let timeLeft = currentPhaseConfig.seconds;
+
+  breathingLoopInterval = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(breathingLoopInterval);
+      respiratoryCyclePhase++;
+      runGuidedBreathingPulse(prefix);
+    }
+  }, 1000);
+}
+
+function stopBreathing(prefix) {
+  isBreathingActive = false;
+  clearInterval(breathingLoopInterval);
+  const targetCircle = document.getElementById(`${prefix}-breathingCircle`);
+  if (targetCircle) {
+    targetCircle.textContent = "Press Start";
+    targetCircle.className = "breathing-circle";
+  }
+  respiratoryCyclePhase = 0;
+  showSystemToast("Breathing session ended. Respiratory vitals stabilized.", "info");
+}
+
+function showSystemToast(msg, type = 'info') {
+  const container = document.getElementById('toastBox');
+  const card = document.createElement('div');
+  card.className = `toast-node ${type}`;
+  
+  const iconClass = type === 'success' ? 'fas fa-circle-check' : 'fas fa-circle-info';
+  card.innerHTML = `<i class="${iconClass}"></i><span>${msg}</span>`;
+  
+  container.appendChild(card);
+  setTimeout(() => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(15px)';
+    card.style.transition = 'all 0.3s ease';
+    setTimeout(() => { card.remove(); }, 300);
+  }, 3200);
+}
+
+let isBotPanelOpen = false;
+
+function toggleChatbot() {
+  isBotPanelOpen = !isBotPanelOpen;
+  document.getElementById('chatbotWindow').classList.toggle('open', isBotPanelOpen);
+  if (isBotPanelOpen) {
+    const msgBox = document.getElementById('chatbotMsgs');
+    if (msgBox.children.length === 0) {
+      addBotConversationMessage("Hi Ananya! I am **JUHI**, your local secure companion AI. How can I help with your diagnostics or breathing indexes today?");
+    }
+  }
+}
+
+function handleChatInputSend() {
+  const field = document.getElementById('chatInputField');
+  const val = field.value.trim();
+  if (!val) return;
+
+  addUserConversationMessage(val);
+  field.value = "";
+  processJuhiDiagnosticEngine(val);
+}
+
+function sendChatQuery(presetText) {
+  addUserConversationMessage(presetText);
+  processJuhiDiagnosticEngine(presetText);
+}
+
+function addUserConversationMessage(txt) {
+  const msgBox = document.getElementById('chatbotMsgs');
+  const bubble = document.createElement('div');
+  bubble.className = "chat-bubble user";
+  bubble.textContent = txt;
+  msgBox.appendChild(bubble);
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function addBotConversationMessage(txt) {
+  const msgBox = document.getElementById('chatbotMsgs');
+  const bubble = document.createElement('div');
+  bubble.className = "chat-bubble bot";
+  bubble.innerHTML = txt;
+  msgBox.appendChild(bubble);
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function processJuhiDiagnosticEngine(query) {
+  const q = query.toLowerCase();
+  
+  if (q.includes('vitals') || q.includes('status') || q.includes('assess')) {
+    setTimeout(() => {
+      addBotConversationMessage(`Analyzing connected vitals parameters... <br><br>📊 **Heart Rate**: 74 bpm (Normal Baseline)<br>🩸 **Blood Pressure**: 120/80 mmHg (Optimal)<br>🌬️ **Oxygen Saturation**: 99% (Excellent).<br><br>No immediate health deviations detected.`);
+    }, 800);
+  } else if (q.includes('asthma') || q.includes('breathe') || q.includes('calm')) {
+    setTimeout(() => {
+      addBotConversationMessage(`Asthma management profile is **active**. Your current medication is **Montelukast 10mg**. <br><br>I suggest avoiding cold atmospheric dust triggers today. I have prepared the **Guided Breathing Space** block on your screen to assist in relaxation.`);
+    }, 800);
+  } else if (q.includes('fever') || q.includes('headache')) {
+    setTimeout(() => {
+      addBotConversationMessage(`I've logged these symptoms in your profile context. Please check your temperature with a physical thermometer. If readings climb above **101°F**, consult your physician.`);
+    }, 800);
+  } else {
+    setTimeout(() => {
+      addBotConversationMessage(`Your message was captured and encrypted securely locally in your resQ diagnostic logger. How else can I guide your medical vault processes today?`);
+    }, 800);
+  }
+}
+</script>
+</body>
+</html>

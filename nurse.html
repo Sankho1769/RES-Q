@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESQ - Ambulance Portal</title>
+    <!-- Tailwind CSS CDN for modern and responsive utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN for medical and navigation iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet Map CSS for location routing panels -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Map JS for rendering routing maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae2fd',
+                            500: '#0284c7',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Work+Sans:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            scrollbar-width: thin;
+        }
+
+        .header-title {
+            font-family: 'Work Sans', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.04);
+        }
+
+        @keyframes pulse-radar {
+            0% { transform: scale(0.95); opacity: 0.6; }
+            50% { opacity: 0.9; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .radar-wave {
+            animation: pulse-radar 2.5s infinite ease-out;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(37, 99, 235, 0.2);
+            border-radius: 20px;
+        }
+        .active-ring {
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col overflow-hidden">
+
+    <header class="glass border-b border-blue-100/80 px-6 py-3.5 flex flex-wrap items-center justify-between z-50 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="relative w-10 h-10 flex items-center justify-center bg-blue-50 rounded-lg border border-blue-200">
+                <i class="fa-solid fa-truck-medical text-blue-600 text-xl animate-pulse"></i>
+                <div class="absolute inset-0 rounded-lg border border-blue-500/20 radar-wave"></div>
+            </div>
+            <div>
+                <span class="header-title font-black text-lg bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent tracking-wider">RESQ AMBULANCE</span>
+                <p class="text-[9px] text-blue-500 tracking-widest uppercase font-bold">Patient Registration &amp; Dispatch Hub</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2 text-xs">
+                <div id="sync-spinner" class="hidden w-3.5 h-3.5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                <span id="db-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span id="db-indicator-text" class="text-slate-500 font-mono text-[11px] font-medium hidden sm:inline">Local Storage Channel Active</span>
+            </div>
+            <button onclick="toggleAudioMute()" id="audio-toggle-btn" class="w-8 h-8 rounded-lg bg-white border border-blue-100 hover:border-blue-500 flex items-center justify-center transition-all shadow-sm">
+                <i class="fa-solid fa-volume-high text-slate-500 text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-hidden relative p-6 flex flex-col lg:flex-row gap-6">
+        <div class="w-full lg:w-[45%] flex flex-col gap-4 lg:h-full lg:overflow-y-auto custom-scrollbar pb-24 lg:pb-4">
+            <div class="glass p-5 rounded-2xl border border-blue-100">
+                <h2 class="header-title text-xl font-bold text-slate-900 mb-1.5 flex items-center space-x-2">
+                    <i class="fa-solid fa-clipboard-list text-blue-600 animate-pulse"></i>
+                    <span>Emergency Registration Form</span>
+                </h2>
+                <p class="text-xs text-slate-500 mb-4">Select an Emergency Preset to pre-fill parameters, or customize your request below.</p>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-4">
+                    <button id="preset-btn-heart_attack" onclick="loadSymptomPreset('heart_attack')" class="p-2.5 rounded-xl border border-slate-100 bg-white hover:border-red-300 text-left transition-all group shadow-sm">
+                        <span class="block text-[10px] text-slate-400">Preset Case</span>
+                        <span class="block text-xs font-bold text-red-600"><i class="fa-solid fa-heart-pulse mr-0.5"></i> Heart Attack</span>
+                    </button>
+                    <button id="preset-btn-accident" onclick="loadSymptomPreset('accident')" class="p-2.5 rounded-xl border border-slate-100 bg-white hover:border-red-300 text-left transition-all group shadow-sm">
+                        <span class="block text-[10px] text-slate-400">Preset Case</span>
+                        <span class="block text-xs font-bold text-rose-600"><i class="fa-solid fa-car-burst mr-0.5"></i> Accident</span>
+                    </button>
+                    <button id="preset-btn-stroke" onclick="loadSymptomPreset('stroke')" class="p-2.5 rounded-xl border border-slate-100 bg-white hover:border-amber-300 text-left transition-all group shadow-sm">
+                        <span class="block text-[10px] text-slate-400">Preset Case</span>
+                        <span class="block text-xs font-bold text-amber-600"><i class="fa-solid fa-brain mr-0.5"></i> Stroke</span>
+                    </button>
+                    <button id="preset-btn-breathing" onclick="loadSymptomPreset('breathing')" class="p-2.5 rounded-xl border border-slate-100 bg-white hover:border-blue-300 text-left transition-all group shadow-sm">
+                        <span class="block text-[10px] text-slate-400">Preset Case</span>
+                        <span class="block text-xs font-bold text-blue-600"><i class="fa-solid fa-lungs mr-0.5"></i> Dyspnea</span>
+                    </button>
+                    <button id="preset-btn-pregnancy" onclick="loadSymptomPreset('pregnancy')" class="p-2.5 rounded-xl border border-slate-100 bg-white hover:border-purple-300 text-left transition-all group shadow-sm">
+                        <span class="block text-[10px] text-slate-400">Preset Case</span>
+                        <span class="block text-xs font-bold text-purple-600"><i class="fa-solid fa-baby mr-0.5"></i> Labor</span>
+                    </button>
+                    <button id="preset-btn-fever" onclick="loadSymptomPreset('fever')" class="p-2.5 rounded-xl border border-slate-100 bg-white hover:border-teal-300 text-left transition-all group shadow-sm">
+                        <span class="block text-[10px] text-slate-400">Preset Case</span>
+                        <span class="block text-xs font-bold text-teal-600"><i class="fa-solid fa-temperature-arrow-up mr-0.5"></i> High Fever</span>
+                    </button>
+                </div>
+
+                <div id="ai-triage-card" class="mb-4 p-3.5 rounded-xl border border-blue-200 bg-blue-50/50 hidden transition-all duration-300">
+                    <div class="flex items-center space-x-2 text-blue-700 text-xs font-bold uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-brain animate-bounce"></i>
+                        <span>AI Active Diagnostics Triage</span>
+                    </div>
+                    <p id="ai-triage-question" class="text-xs text-slate-700 font-medium mb-2.5">Confirming clinical signs...</p>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="answerTriage(true)" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-all shadow-sm">Positive / Yes</button>
+                        <button onclick="answerTriage(false)" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-lg transition-all shadow-sm">No</button>
+                    </div>
+                </div>
+
+                <form id="emergency-form" onsubmit="handleEmergencySubmit(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Patient Full Name</label>
+                        <input id="user-patient-name" type="text" required class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm" placeholder="e.g. Robert Miller">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Age</label>
+                            <input id="user-patient-age" type="number" required class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm" placeholder="Age">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Blood Group</label>
+                            <select id="user-patient-blood" required class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm">
+                                <option value="">Choose Type</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Current Vitals / Emergency Details</label>
+                        <textarea id="user-patient-symptoms" required rows="2" class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm" placeholder="Provide context of current vital status or symptoms..."></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Kolkata Region</label>
+                            <select id="user-patient-region" onchange="onRegionChange()" required class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm">
+                                <option value="">Select Region</option>
+                                <option value="Behala">Behala Region</option>
+                                <option value="Tollygunge">Tollygunge Region</option>
+                                <option value="New Town">New Town Region</option>
+                                <option value="Ballygunge">Ballygunge Region</option>
+                                <option value="Salt Lake">Salt Lake Region</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Street / GPS Address</label>
+                                <button type="button" onclick="useCurrentGPS()" class="text-[9px] text-blue-600 hover:text-blue-800 font-bold flex items-center space-x-1">
+                                    <i class="fa-solid fa-location-crosshairs"></i>
+                                    <span>Use GPS</span>
+                                </button>
+                            </div>
+                            <input id="user-patient-address" type="text" oninput="detectRegionFromAddress(this.value)" required class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm" placeholder="Street intersection, block number">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Hosp Preference</label>
+                            <select id="user-patient-hospital-pref" class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm">
+                                <option value="AUTO">Nearest/AI-Recommended</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-semibold">Ambulance Capability Class</label>
+                            <select id="user-patient-ambulance-pref" class="w-full bg-white border border-blue-100 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-slate-800 outline-none transition-all shadow-sm">
+                                <option value="AUTO">Optimal dispatch suggestions</option>
+                                <option value="BLS">Basic Life Support (BLS)</option>
+                                <option value="ALS">Advanced Life Support (ALS)</option>
+                                <option value="MICU">Mobile Intensive Care (MICU)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-sm tracking-wider uppercase transition-all shadow-lg shadow-blue-500/10">
+                        Launch Intelligent Routing
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-4 lg:h-full lg:overflow-hidden pb-12 lg:pb-4">
+            <div id="user-ai-analysis-container" class="glass p-6 rounded-2xl flex-1 flex flex-col items-center justify-center relative overflow-hidden min-h-[350px]">
+                <div id="ai-scanning-overlay" class="hidden absolute inset-0 bg-white/95 flex flex-col items-center justify-center z-10 space-y-4">
+                    <div class="relative w-24 h-24">
+                        <div class="absolute inset-0 rounded-full border border-blue-400/30 animate-ping"></div>
+                        <div class="absolute inset-2 rounded-full border border-blue-600 animate-spin border-t-transparent"></div>
+                        <div class="absolute inset-4 rounded-full border border-indigo-400 animate-pulse flex items-center justify-center">
+                            <i class="fa-solid fa-brain text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-center space-y-1">
+                        <h4 class="header-title font-extrabold text-slate-900 tracking-wider text-sm uppercase">RESQ Decision Matrix Engine</h4>
+                        <p id="ai-status-step" class="text-blue-600 text-xs font-mono">Running triage parameter parsing...</p>
+                    </div>
+                </div>
+
+                <div id="ai-waiting-placeholder" class="text-center space-y-4 p-6">
+                    <div class="w-20 h-20 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-2 text-blue-600 shadow-sm">
+                        <i class="fa-solid fa-satellite-dish text-3xl animate-pulse"></i>
+                    </div>
+                    <h3 class="header-title text-xl font-bold text-slate-900">Awaiting Emergency Inputs</h3>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                        Complete the registration form or utilize the symptoms presets on the left to start the smart emergency coordination sync process.
+                    </p>
+                </div>
+
+                <div id="ai-result-panel" class="hidden w-full h-full flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-red-50 border border-red-200 text-red-600 text-[10px] px-3 py-1 rounded-full font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+                                <span id="ai-badge-severity" class="tracking-wide">CRITICAL CASE STATUS</span>
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-mono" id="ai-timestamp">TID: Loading...</span>
+                        </div>
+                        
+                        <h3 class="header-title text-xl font-extrabold text-slate-950 mb-1" id="ai-emergency-type">TRAUMA CORE DETECTED</h3>
+                        <p class="text-xs text-slate-600 mb-5 leading-relaxed" id="ai-reason-statement">AI parsed vital metrics are mapping to severe outcomes. Reallocating regional resources instantly.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl border border-blue-100 bg-blue-50/20">
+                                <div class="flex items-center space-x-1.5 text-blue-600 mb-2">
+                                    <i class="fa-solid fa-hospital text-sm"></i>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider">Routed Facility Hospital</span>
+                                </div>
+                                <p class="font-extrabold text-slate-900 text-sm" id="ai-assigned-hospital">Loading Facility...</p>
+                                <span class="text-[10px] text-slate-500 block mt-1" id="ai-hospital-meta">Verifying available beds...</span>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-indigo-100 bg-indigo-50/20">
+                                <div class="flex items-center space-x-1.5 text-indigo-600 mb-2">
+                                    <i class="fa-solid fa-truck-medical text-sm"></i>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider">Dispatched Ambulance</span>
+                                </div>
+                                <p class="font-extrabold text-slate-900 text-sm" id="ai-assigned-ambulance">Alpha Unit...</p>
+                                <span class="text-[10px] text-slate-500 block mt-1" id="ai-ambulance-meta">Calculating optimum path...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-4 flex flex-col gap-4">
+                        <div class="h-44 w-full rounded-xl overflow-hidden relative shadow-inner border border-slate-100">
+                            <div id="live-map" class="w-full h-full z-10"></div>
+                            <div class="absolute bottom-2 right-2 z-20 glass px-2 py-1 rounded text-[8px] font-bold uppercase text-slate-700">Live Route Map</div>
+                        </div>
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 text-xs">
+                                    <i class="fa-solid fa-spinner animate-spin"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-[9px] text-slate-400 uppercase tracking-widest font-bold">Cloud Streams</span>
+                                    <span class="block text-xs font-extrabold text-slate-800">Transmitting Incident Logs</span>
+                                </div>
+                            </div>
+                            <button onclick="resetAmbulanceState()" class="px-5 py-2.5 bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold text-xs rounded-xl uppercase tracking-wider transition-all">
+                                Clear Request
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        window.AppState = {
+            activeRequest: null,
+            nurseVitals: { o2: 94, bp: '145/95', pulse: 98, hr: 98 },
+            nurseReqs: { icu: false, blood: false, oxygen: false, ventilator: false, doc: false },
+            hospitalPrep: { icu: false, blood: false, oxygen: false, ventilator: false, doc: false },
+            isDemoMode: true,
+            isAudioMuted: false,
+            audioCtx: null,
+            currentTriageQuestionId: null
+        };
+
+        window.trackingMap = null;
+        window.ambulanceMarker = null;
+        window.routeLine = null;
+        window.simulationTimerId = null;
+        window.mockSimCounter = 0;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'resq-emergency-system';
+        let db = null;
+        let auth = null;
+
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        const regionHospitals = {
+            "Behala": ["Vidyasagar State General Hospital", "Behala Balananda Brahmachari Hospital", "James Long Hospital"],
+            "Tollygunge": ["M R Bangur Hospital", "RSV Hospital", "AMRI Hospital Dhakuria"],
+            "New Town": ["Tata Medical Center", "Bhagirathi Neotia Care Centre", "Charnock Hospital"],
+            "Ballygunge": ["AMRI Hospital Dhakuria", "Fortis Medical Centre Ballygunge", "SSKM Hospital"],
+            "Salt Lake": ["AMRI Hospitals Salt Lake", "Manipal Hospital Broadway", "Apollo Multispeciality Hospitals"]
+        };
+
+        const regionCoordinates = {
+            "Behala": [22.4988, 88.3149],
+            "Tollygunge": [22.4930, 88.3473],
+            "New Town": [22.5726, 88.4635],
+            "Ballygunge": [22.5278, 88.3656],
+            "Salt Lake": [22.5804, 88.4110]
+        };
+
+        const triageQuestions = {
+            heart_attack: {
+                question: "Is the patient experiencing acute pressure radiating down the left arm, neck or jaw?",
+                yesText: " radiates left arm/jaw pain",
+                noText: " no arm/jaw radiating pain"
+            },
+            accident: {
+                question: "Is there active arterial bleeding or deep compound bone fractures visible?",
+                yesText: " compound bone fracture, active arterial bleeding",
+                noText: " bleeding is slow/controlled, closed trauma suspected"
+            },
+            stroke: {
+                question: "Are facial features asymmetrical when smiling or is speech slurred/garbled?",
+                yesText: " acute speech garbling, asymmetrical facial droop",
+                noText: " clear speech patterns, motor weakness only"
+            },
+            breathing: {
+                question: "Is the patient breathing with deep gasping wheezes or showing blue-tinted lips?",
+                yesText: " severe respiratory stridor, visible lips cyanosis",
+                noText: " mild dyspnea, normal oxygenated lips pink"
+            },
+            pregnancy: {
+                question: "Are labor contraction intervals measuring under 60 seconds with fluid discharge?",
+                yesText: " contraction gap <60s, amniotic discharge active",
+                noText: " contraction gap >3 mins, delivery pre-stage"
+            },
+            fever: {
+                question: "Is the body temperature measuring above 104°F accompanied by acute state confusion?",
+                yesText: " fever is 104.2°F, patient showing state confusion",
+                noText: " fever is 101.5°F, patient fully coherent"
+            }
+        };
+
+        const symptomPresets = {
+            heart_attack: {
+                symptoms: "Sudden onset crushing chest pain, dyspnea, heavy chest pressure.",
+                region: "Behala",
+                street: "14 James Long Sarani",
+                colorClass: "border-red-500 bg-red-50/80 text-red-700 active-ring"
+            },
+            accident: {
+                symptoms: "Polytrauma from bike crash. Deep arterial laceration on right leg.",
+                region: "New Town",
+                street: "Major Arterial Road, Near Eco Park Crossing",
+                colorClass: "border-rose-500 bg-rose-50/80 text-rose-700 active-ring"
+            },
+            stroke: {
+                symptoms: "Acute face slurring and left side droop, sudden loss of bodily coordination.",
+                region: "Ballygunge",
+                street: "Broad Street, near Ballygunge Phari",
+                colorClass: "border-amber-500 bg-amber-50/80 text-amber-700 active-ring"
+            },
+            breathing: {
+                symptoms: "Extreme shortness of breath, asthma flareup, wheezing sound.",
+                region: "Salt Lake",
+                street: "Sector V, Block GP, near College More",
+                colorClass: "border-blue-500 bg-blue-50/80 text-blue-700 active-ring"
+            },
+            pregnancy: {
+                symptoms: "Advanced third-trimester active contractions, water broke.",
+                region: "Tollygunge",
+                street: "Moore Avenue, near Tollygunge Metro",
+                colorClass: "border-purple-500 bg-purple-50/80 text-purple-700 active-ring"
+            },
+            fever: {
+                symptoms: "Uncontrollable high-grade fever spike measuring 103F, acute shivering.",
+                region: "Behala",
+                street: "Parnasree Pally",
+                colorClass: "border-teal-500 bg-teal-50/80 text-teal-700 active-ring"
+            }
+        };
+
+        const randomGPSPlaces = [
+            { street: "14 James Long Sarani, Behala Chowrasta", region: "Behala" },
+            { street: "Sector V, Block GP, Salt Lake", region: "Salt Lake" },
+            { street: "Major Arterial Road, near Eco Park, New Town", region: "New Town" },
+            { street: "Broad Street, near Ballygunge Phari", region: "Ballygunge" },
+            { street: "Moore Avenue, near Tollygunge Metro Station", region: "Tollygunge" }
+        ];
+
+        function syncLocalStorageState() {
+            localStorage.setItem('resq_shared_state', JSON.stringify(window.AppState));
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'resq_shared_state' && e.newValue) {
+                const updated = JSON.parse(e.newValue);
+                window.AppState = updated;
+                syncUIWithGlobalState();
+            }
+        });
+
+        async function commitStateMutation() {
+            syncLocalStorageState();
+
+            if (!window.AppState.isDemoMode && db) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'coordination_state', 'active_session_state');
+                    await setDoc(docRef, {
+                        activeRequest: window.AppState.activeRequest,
+                        nurseVitals: window.AppState.nurseVitals,
+                        nurseReqs: window.AppState.nurseReqs,
+                        hospitalPrep: window.AppState.hospitalPrep,
+                        timestamp: Date.now()
+                    });
+                } catch (e) {
+                    console.warn("Cloud write access restricted, falling back to Local Storage:", e);
+                    window.AppState.isDemoMode = true;
+                    const dbIndicatorDot = document.getElementById('db-indicator-dot');
+                    const dbIndicatorTxt = document.getElementById('db-indicator-text');
+                    if (dbIndicatorDot && dbIndicatorTxt) {
+                        dbIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+                        dbIndicatorTxt.innerText = "Local Sync Active (Restricted)";
+                    }
+                }
+            }
+        }
+
+        function highlightPresetSelection(presetKey) {
+            Object.keys(symptomPresets).forEach(key => {
+                const btn = document.getElementById(`preset-btn-${key}`);
+                if (btn) {
+                    btn.className = "p-2.5 rounded-xl border border-slate-100 bg-white hover:border-red-300 text-left transition-all group shadow-sm";
+                }
+            });
+
+            const activeBtn = document.getElementById(`preset-btn-${presetKey}`);
+            const presetData = symptomPresets[presetKey];
+            if (activeBtn && presetData) {
+                activeBtn.className = `p-2.5 rounded-xl border ${presetData.colorClass} text-left transition-all group`;
+            }
+        }
+
+        window.loadSymptomPreset = function(presetKey) {
+            const data = symptomPresets[presetKey];
+            if (!data) return;
+
+            document.getElementById('user-patient-symptoms').value = data.symptoms;
+            document.getElementById('user-patient-region').value = data.region;
+            window.onRegionChange();
+            document.getElementById('user-patient-address').value = data.street;
+
+            highlightPresetSelection(presetKey);
+
+            const triageData = triageQuestions[presetKey];
+            const triageCard = document.getElementById('ai-triage-card');
+            const triageQuestionEl = document.getElementById('ai-triage-question');
+
+            if (triageData && triageCard && triageQuestionEl) {
+                triageQuestionEl.innerText = triageData.question;
+                triageCard.classList.remove('hidden');
+                window.AppState.currentTriageQuestionId = presetKey;
+            }
+            playSciFiSound('click');
+        };
+
+        window.onRegionChange = function() {
+            const regionSelect = document.getElementById('user-patient-region');
+            const hospitalSelect = document.getElementById('user-patient-hospital-pref');
+            const selectedRegion = regionSelect.value;
+
+            hospitalSelect.innerHTML = '<option value="AUTO">Nearest/AI-Recommended</option>';
+            if (selectedRegion && regionHospitals[selectedRegion]) {
+                regionHospitals[selectedRegion].forEach(hosp => {
+                    const opt = document.createElement('option');
+                    opt.value = hosp; opt.innerText = hosp;
+                    hospitalSelect.appendChild(opt);
+                });
+            }
+            playSciFiSound('click');
+        };
+
+        window.useCurrentGPS = function() {
+            const locationItem = randomGPSPlaces[Math.floor(Math.random() * randomGPSPlaces.length)];
+            document.getElementById('user-patient-address').value = locationItem.street;
+            document.getElementById('user-patient-region').value = locationItem.region;
+            window.onRegionChange();
+            playSciFiSound('success');
+        };
+
+        window.answerTriage = function(isYes) {
+            const presetKey = window.AppState.currentTriageQuestionId;
+            const triageData = triageQuestions[presetKey];
+            if (!triageData) return;
+
+            const targetInput = document.getElementById('user-patient-symptoms');
+            const phrase = isYes ? triageData.yesText : triageData.noText;
+            if (!targetInput.value.includes(phrase)) {
+                targetInput.value = targetInput.value.trim() + " (" + phrase.trim() + ").";
+            }
+            document.getElementById('ai-triage-card').classList.add('hidden');
+            playSciFiSound('success');
+        };
+
+        window.handleEmergencySubmit = function(event) {
+            event.preventDefault();
+            const name = document.getElementById('user-patient-name').value;
+            const age = document.getElementById('user-patient-age').value;
+            const blood = document.getElementById('user-patient-blood').value;
+            const symptoms = document.getElementById('user-patient-symptoms').value;
+            const region = document.getElementById('user-patient-region').value;
+            const address = document.getElementById('user-patient-address').value;
+            const prefHosp = document.getElementById('user-patient-hospital-pref').value;
+            const ambClass = document.getElementById('user-patient-ambulance-pref').value;
+
+            executeUnifiedDispatchWorkflow(name, age, blood, symptoms, `${address}, ${region}`, prefHosp, region, ambClass);
+        };
+
+        function executeUnifiedDispatchWorkflow(name, age, blood, symptoms, loc, prefHosp, region, ambClass) {
+            document.getElementById('ai-waiting-placeholder').classList.add('hidden');
+            document.getElementById('ai-result-panel').classList.add('hidden');
+            document.getElementById('ai-scanning-overlay').classList.remove('hidden');
+            playSciFiSound('alert');
+
+            let stepText = document.getElementById('ai-status-step');
+            const steps = [
+                "Quantifying emergency triage metrics...",
+                "Searching real-time Kolkata traffic corridor maps...",
+                "Consulting optimal active hospital bed registries...",
+                "Verifying responsive ambulance hardware vectors..."
+            ];
+
+            let index = 0;
+            const timer = setInterval(() => {
+                if (index < steps.length) {
+                    if (stepText) stepText.innerText = steps[index];
+                    index++;
+                } else {
+                    clearInterval(timer);
+                    finalizeSystemDispatch(name, age, blood, symptoms, loc, prefHosp, region, ambClass);
+                }
+            }, 400);
+        }
+
+        function finalizeSystemDispatch(name, age, blood, symptoms, loc, prefHosp, region, ambClass) {
+            document.getElementById('ai-scanning-overlay').classList.add('hidden');
+
+            let assignedHospital = prefHosp;
+            if (prefHosp === "AUTO") {
+                assignedHospital = (region && regionHospitals[region]) ? regionHospitals[region][0] : "Vidyasagar State General Hospital";
+            }
+
+            const calculatedSeverity = determineDynamicSeverity(symptoms);
+            const assignedAmbulance = calculatedSeverity === "CRITICAL" ? "Rescue-02 (ALS Class)" : "Unit-14 (BLS Class)";
+
+            const request = {
+                id: crypto.randomUUID().substring(0, 8).toUpperCase(),
+                patient_name: name,
+                age: age,
+                blood_group: blood,
+                symptoms: symptoms,
+                location: loc,
+                region: region || "Behala",
+                status: 'dispatched',
+                hospital_assigned: assignedHospital,
+                ambulance_assigned: assignedAmbulance,
+                eta: 6,
+                severity: calculatedSeverity,
+                reason: `Vital analysis maps to standard trauma protocol. Standby initialized.`,
+                type: `CRITICAL TRAUMA DISPATCH RESPONSE`,
+                hospMeta: `ICU Bed lock authorized.`,
+                ambMeta: `Paramedic Carter on standby.`,
+                guidance: determineDynamicGuidance(symptoms)
+            };
+
+            window.AppState.activeRequest = request;
+            window.AppState.nurseVitals = { o2: 94, bp: '145/95', pulse: 98, hr: 98 };
+            window.AppState.nurseReqs = { icu: false, blood: false, oxygen: false, ventilator: false, doc: false };
+            window.AppState.hospitalPrep = { icu: false, blood: false, oxygen: false, ventilator: false, doc: false };
+
+            commitStateMutation();
+            syncUIWithGlobalState();
+            startMovingAmbulanceRouteSimulation();
+            playSciFiSound('success');
+        }
+
+        function syncUIWithGlobalState() {
+            const req = window.AppState.activeRequest;
+            if (!req) {
+                resetUIElements();
+                return;
+            }
+
+            document.getElementById('ai-waiting-placeholder').classList.add('hidden');
+            document.getElementById('ai-result-panel').classList.remove('hidden');
+
+            document.getElementById('ai-emergency-type').innerText = req.type;
+            document.getElementById('ai-badge-severity').innerText = `SEVERITY: ${req.severity}`;
+            document.getElementById('ai-assigned-hospital').innerText = req.hospital_assigned;
+            document.getElementById('ai-hospital-meta').innerText = req.hospMeta;
+            document.getElementById('ai-assigned-ambulance').innerText = req.ambulance_assigned;
+            document.getElementById('ai-ambulance-meta').innerText = req.ambMeta;
+            document.getElementById('ai-timestamp').innerText = `TID: #${req.id}`;
+
+            setTimeout(() => {
+                initOrRefreshMap();
+            }, 100);
+        }
+
+        function resetUIElements() {
+            document.getElementById('emergency-form').reset();
+            document.getElementById('ai-waiting-placeholder').classList.remove('hidden');
+            document.getElementById('ai-result-panel').classList.add('hidden');
+            document.getElementById('ai-scanning-overlay').classList.add('hidden');
+            document.getElementById('ai-triage-card').classList.add('hidden');
+
+            if (window.ambulanceMarker && window.trackingMap) {
+                window.trackingMap.removeLayer(window.ambulanceMarker);
+                window.ambulanceMarker = null;
+            }
+            if (window.routeLine && window.trackingMap) {
+                window.trackingMap.removeLayer(window.routeLine);
+                window.routeLine = null;
+            }
+        }
+
+        window.resetAmbulanceState = function() {
+            window.AppState.activeRequest = null;
+            commitStateMutation();
+            resetUIElements();
+        };
+
+        function initOrRefreshMap() {
+            const mapEl = document.getElementById('live-map');
+            if (!mapEl) return;
+
+            let targetCenter = [22.5726, 88.3639];
+            const req = window.AppState.activeRequest;
+
+            if (req && req.region && regionCoordinates[req.region]) {
+                targetCenter = regionCoordinates[req.region];
+            }
+
+            if (!window.trackingMap) {
+                window.trackingMap = L.map('live-map', {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView(targetCenter, 14);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 20
+                }).addTo(window.trackingMap);
+            } else {
+                window.trackingMap.setView(targetCenter, 14);
+            }
+
+            setTimeout(() => {
+                window.trackingMap.invalidateSize();
+                drawStaticRouteSimulation(targetCenter);
+            }, 50);
+        }
+
+        function drawStaticRouteSimulation(destinationCoord) {
+            if (!window.trackingMap) return;
+
+            if (window.ambulanceMarker) window.trackingMap.removeLayer(window.ambulanceMarker);
+            if (window.routeLine) window.trackingMap.removeLayer(window.routeLine);
+
+            const startPoint = [destinationCoord[0] + 0.015, destinationCoord[1] - 0.012];
+            const endPoint = destinationCoord;
+
+            const customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `
+                    <div class="relative w-8 h-8 flex items-center justify-center bg-blue-50 rounded-full border border-blue-600 shadow-md">
+                        <i class="fa-solid fa-ambulance text-blue-600 text-xs animate-pulse"></i>
+                        <div class="absolute inset-0 rounded-full border border-blue-400 radar-wave"></div>
+                    </div>
+                `,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            window.ambulanceMarker = L.marker(startPoint, { icon: customIcon }).addTo(window.trackingMap);
+
+            const pathCoords = [
+                startPoint,
+                [startPoint[0] - 0.004, startPoint[1] + 0.003],
+                [startPoint[0] - 0.008, startPoint[1] + 0.006],
+                [startPoint[0] - 0.012, startPoint[1] + 0.009],
+                endPoint
+            ];
+
+            window.routeLine = L.polyline(pathCoords, {
+                color: '#2563eb',
+                weight: 5,
+                opacity: 0.85,
+                dashArray: '8, 8'
+            }).addTo(window.trackingMap);
+
+            window.trackingMap.fitBounds(window.routeLine.getBounds(), { padding: [20, 20] });
+        }
+
+        function startMovingAmbulanceRouteSimulation() {
+            if (window.simulationTimerId) {
+                clearInterval(window.simulationTimerId);
+            }
+
+            window.mockSimCounter = 0;
+            window.simulationTimerId = setInterval(() => {
+                const req = window.AppState.activeRequest;
+                if (!req) {
+                    clearInterval(window.simulationTimerId);
+                    return;
+                }
+
+                window.mockSimCounter++;
+                const remainingMins = Math.max(0, 6 - window.mockSimCounter);
+                window.AppState.activeRequest.eta = remainingMins;
+
+                if (remainingMins === 0) {
+                    clearInterval(window.simulationTimerId);
+                }
+                commitStateMutation();
+            }, 6000);
+        }
+
+        function determineDynamicSeverity(symptoms) {
+            const criticalKeywords = ["chest", "heart", "cardiac", "arterial", "bleed", "stroke", "slur", "droop", "unconscious", "chok", "breath", "lungs", "apnea"];
+            const lowerSymptoms = symptoms.toLowerCase();
+            return criticalKeywords.some(k => lowerSymptoms.includes(k)) ? "CRITICAL" : "HIGH PRIORITY";
+        }
+
+        function determineDynamicGuidance(symptoms) {
+            return `<p class='text-xs'>Awaiting diagnostics. Ensure air corridors are ventilated.</p>`;
+        }
+
+        function initRealtimeSync() {
+            const cached = localStorage.getItem('resq_shared_state');
+            if (cached) {
+                window.AppState = JSON.parse(cached);
+                syncUIWithGlobalState();
+            }
+
+            if (db && auth) {
+                const dbIndicatorDot = document.getElementById('db-indicator-dot');
+                const dbIndicatorTxt = document.getElementById('db-indicator-text');
+                
+                dbIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse";
+                dbIndicatorTxt.innerText = "Connecting Cloud...";
+
+                signInAnonymously(auth).then(() => {
+                    dbIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+                    dbIndicatorTxt.innerText = "Firestore Cloud Active";
+
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'coordination_state', 'active_session_state');
+                    onSnapshot(docRef, (snap) => {
+                        if (snap.exists()) {
+                            window.AppState = snap.data();
+                            syncUIWithGlobalState();
+                        }
+                    }, (error) => {
+                        console.warn("Cloud listener restricted, reverting gracefully to Local Storage sync:", error);
+                        dbIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
+                        dbIndicatorTxt.innerText = "Local Sync Active (Cloud Restricted)";
+                        window.AppState.isDemoMode = true;
+                    });
+                }).catch((err) => {
+                    console.warn("Cloud auth restricted, falling back to local mode:", err);
+                    dbIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
+                    dbIndicatorTxt.innerText = "Local Sync Active (Offline)";
+                    window.AppState.isDemoMode = true;
+                });
+            } else {
+                const dbIndicatorDot = document.getElementById('db-indicator-dot');
+                const dbIndicatorTxt = document.getElementById('db-indicator-text');
+                if (dbIndicatorDot && dbIndicatorTxt) {
+                    dbIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+                    dbIndicatorTxt.innerText = "Local Storage Active";
+                }
+            }
+        }
+
+        window.toggleAudioMute = function() {
+            window.AppState.isAudioMuted = !window.AppState.isAudioMuted;
+            const btn = document.getElementById('audio-toggle-btn');
+            btn.innerHTML = window.AppState.isAudioMuted ? '<i class="fa-solid fa-volume-xmark text-slate-400 text-xs"></i>' : '<i class="fa-solid fa-volume-high text-slate-500 text-xs"></i>';
+        };
+
+        function initAudio() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) window.AppState.audioCtx = new AudioContext();
+            } catch (e) {}
+        }
+
+        function playSciFiSound(type) {
+            if (window.AppState.isAudioMuted || !window.AppState.audioCtx) return;
+            try {
+                const osc = window.AppState.audioCtx.createOscillator();
+                const gain = window.AppState.audioCtx.createGain();
+                osc.connect(gain); gain.connect(window.AppState.audioCtx.destination);
+                osc.start(); osc.stop(window.AppState.audioCtx.currentTime + 0.15);
+            } catch (e) {}
+        }
+
+        initRealtimeSync();
+    </script>
+</body>
+</html>

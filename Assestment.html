@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AI Emergency Quick Assessment | ResQ</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<a href="index.html" class="back-btn" id="backBtn">
+  <span class="back-icon">&#8592;</span>
+  <span class="back-text">Back</span>
+</a>
+
+<div class="emergency-status-badge">
+  <span class="status-dot"></span>
+  <span class="status-text">AI Active</span>
+  <span class="divider">|</span>
+  <span class="monitor-text">Emergency Monitoring Enabled</span>
+</div>
+
+<section class="hero" id="hero">
+  <div class="particles-container" id="particles"></div>
+  <div class="hero-bg-grid"></div>
+  <div class="floating-icons">
+    <div class="float-icon fi1">&#10084;</div>
+    <div class="float-icon fi2">&#128657;</div>
+    <div class="float-icon fi3">&#9877;</div>
+    <div class="float-icon fi4">&#128137;</div>
+    <div class="float-icon fi5">&#128680;</div>
+    <div class="float-icon fi6">&#128148;</div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">EMERGENCY AI SYSTEM v2.0</div>
+    <h1 class="hero-title">
+      <span class="title-line1">AI Emergency</span>
+      <span class="title-line2">Quick Assessment</span>
+    </h1>
+    <p class="hero-subtitle">Smart Ambulance & Hospital Emergency Coordination Platform</p>
+    <div class="heartbeat-container">
+      <svg class="heartbeat-svg" viewBox="0 0 600 80" xmlns="http://www.w3.org/2000/svg">
+        <polyline class="heartbeat-line" points="0,40 60,40 80,40 100,10 115,70 130,5 145,65 160,35 180,40 240,40 260,40 280,10 295,70 310,5 325,65 340,35 360,40 420,40 440,40 460,10 475,70 490,5 505,65 520,35 540,40 600,40"/>
+      </svg>
+      <div class="pulse-dot"></div>
+    </div>
+    <div class="hero-scan">
+      <div class="scan-ring r1"></div>
+      <div class="scan-ring r2"></div>
+      <div class="scan-ring r3"></div>
+      <div class="scan-core">
+        <span class="scan-icon">&#128657;</span>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('symptoms').scrollIntoView({behavior:'smooth'})">
+        Start Assessment
+        <span class="btn-arrow">&#8594;</span>
+      </button>
+      <button class="btn-secondary" onclick="toggleChat()">
+        Talk to Juhi AI
+        <span class="chat-pulse"></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="symptoms-section" id="symptoms">
+  <div class="section-header">
+    <div class="section-tag">STEP 1</div>
+    <h2 class="section-title">Select Emergency Symptom</h2>
+    <p class="section-sub">Tap the symptom that best matches your emergency situation</p>
+  </div>
+  <div class="symptoms-grid" id="symptomsGrid">
+    <div class="symptom-card" data-symptom="chest_pain" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#128147;</div>
+      <h3 class="card-title">Chest Pain</h3>
+      <p class="card-desc">Severe chest tightness, pressure or pain</p>
+      <div class="card-severity critical">CRITICAL</div>
+    </div>
+    <div class="symptom-card" data-symptom="bleeding" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#129656;</div>
+      <h3 class="card-title">Heavy Bleeding</h3>
+      <p class="card-desc">Uncontrolled or severe blood loss</p>
+      <div class="card-severity high">HIGH</div>
+    </div>
+    <div class="symptom-card" data-symptom="accident" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#128663;</div>
+      <h3 class="card-title">Accident / Injury</h3>
+      <p class="card-desc">Trauma from vehicle or physical accident</p>
+      <div class="card-severity high">HIGH</div>
+    </div>
+    <div class="symptom-card" data-symptom="breathing" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#129688;</div>
+      <h3 class="card-title">Breathing Problem</h3>
+      <p class="card-desc">Shortness of breath or respiratory distress</p>
+      <div class="card-severity critical">CRITICAL</div>
+    </div>
+    <div class="symptom-card" data-symptom="stroke" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#129504;</div>
+      <h3 class="card-title">Stroke Symptoms</h3>
+      <p class="card-desc">Facial drooping, arm weakness, speech difficulty</p>
+      <div class="card-severity critical">CRITICAL</div>
+    </div>
+    <div class="symptom-card" data-symptom="burns" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#128293;</div>
+      <h3 class="card-title">Burns</h3>
+      <p class="card-desc">Severe burn injuries from fire or chemicals</p>
+      <div class="card-severity high">HIGH</div>
+    </div>
+    <div class="symptom-card" data-symptom="seizure" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#9889;</div>
+      <h3 class="card-title">Seizure</h3>
+      <p class="card-desc">Uncontrolled convulsions or unconsciousness</p>
+      <div class="card-severity high">HIGH</div>
+    </div>
+    <div class="symptom-card" data-symptom="fever" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#127777;</div>
+      <h3 class="card-title">High Fever</h3>
+      <p class="card-desc">Dangerously high body temperature</p>
+      <div class="card-severity moderate">MODERATE</div>
+    </div>
+    <div class="symptom-card" data-symptom="pregnancy" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#129328;</div>
+      <h3 class="card-title">Pregnancy Emergency</h3>
+      <p class="card-desc">Obstetric emergency or labor complications</p>
+      <div class="card-severity critical">CRITICAL</div>
+    </div>
+    <div class="symptom-card" data-symptom="other" onclick="selectSymptom(this)">
+      <div class="card-glow"></div>
+      <div class="card-icon">&#128680;</div>
+      <h3 class="card-title">Other Emergency</h3>
+      <p class="card-desc">Any other urgent medical situation</p>
+      <div class="card-severity moderate">MODERATE</div>
+    </div>
+  </div>
+</section>
+
+<section class="questions-section" id="questionsSection" style="display:none">
+  <div class="section-header">
+    <div class="section-tag">STEP 2</div>
+    <h2 class="section-title">AI Assessment Questions</h2>
+    <p class="section-sub">Answer to help our AI accurately evaluate your emergency</p>
+  </div>
+  <div class="questions-container" id="questionsContainer"></div>
+  <div class="questions-footer">
+    <button class="btn-analyze" onclick="analyzeEmergency()">
+      <span class="analyze-icon">&#129302;</span>
+      Run AI Analysis
+      <span class="btn-shine"></span>
+    </button>
+  </div>
+</section>
+
+<section class="analysis-section" id="analysisSection" style="display:none">
+  <div class="section-header">
+    <div class="section-tag">STEP 3</div>
+    <h2 class="section-title">AI Severity Analysis</h2>
+    <p class="section-sub">Real-time emergency risk evaluation</p>
+  </div>
+  <div class="analysis-grid">
+    <div class="analysis-card severity-card">
+      <div class="severity-ring-wrap">
+        <svg class="severity-ring" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="50"/>
+          <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-score" id="ringScore">0%</div>
+          <div class="ring-label">Risk Score</div>
+        </div>
+      </div>
+      <div class="severity-labels">
+        <span class="slabel low">Low</span>
+        <span class="slabel moderate">Moderate</span>
+        <span class="slabel high">High</span>
+        <span class="slabel critical">Critical</span>
+      </div>
+    </div>
+    <div class="analysis-card scan-card">
+      <div class="ai-scan-anim">
+        <div class="scan-line"></div>
+        <div class="scan-data">
+          <div class="scan-row"><span>Neural Analysis</span><span class="scan-val" id="sv1">--</span></div>
+          <div class="scan-row"><span>Symptom Match</span><span class="scan-val" id="sv2">--</span></div>
+          <div class="scan-row"><span>Risk Pattern</span><span class="scan-val" id="sv3">--</span></div>
+          <div class="scan-row"><span>Confidence</span><span class="scan-val" id="sv4">--</span></div>
+        </div>
+      </div>
+      <div class="emergency-level-badge" id="emergencyBadge">
+        <span class="badge-icon">&#9888;</span>
+        <span class="badge-text" id="badgeText">Analyzing...</span>
+      </div>
+    </div>
+  </div>
+  <div class="critical-alert" id="criticalAlert" style="display:none">
+    <div class="alert-siren">
+      <div class="siren-light l1"></div>
+      <div class="siren-light l2"></div>
+    </div>
+    <div class="alert-content">
+      <h3 class="alert-title">&#9888; CRITICAL EMERGENCY DETECTED</h3>
+      <p class="alert-msg">Immediate medical intervention required. Dispatching priority ambulance now.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prediction-section" id="predictionSection" style="display:none">
+  <div class="section-header">
+    <div class="section-tag">AI PREDICTION</div>
+    <h2 class="section-title">Emergency Diagnosis & Recommendations</h2>
+    <p class="section-sub">Juhi AI has analyzed your symptoms and generated a comprehensive emergency plan</p>
+  </div>
+  <div class="prediction-grid" id="predictionGrid"></div>
+</section>
+
+<section class="suggestions-section" id="suggestionsSection" style="display:none">
+  <div class="section-header">
+    <div class="section-tag">JUHI AI GUIDANCE</div>
+    <h2 class="section-title">AI Recommended First Aid</h2>
+    <p class="section-sub">Intelligent real-time guidance based on your emergency</p>
+  </div>
+  <div class="suggestions-container" id="suggestionsContainer"></div>
+</section>
+
+<section class="priority-section" id="prioritySituations">
+  <div class="section-header">
+    <div class="section-tag">REFERENCE</div>
+    <h2 class="section-title">Priority Emergency Situations</h2>
+    <p class="section-sub">Critical emergency protocols and response guidelines</p>
+  </div>
+  <div class="priority-grid">
+    <div class="priority-card">
+      <div class="priority-icon">&#129656;</div>
+      <div class="priority-severity critical">CRITICAL</div>
+      <h3>Heavy Bleeding</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Apply direct firm pressure</li>
+            <li>Elevate the injured limb</li>
+            <li>Use clean cloth or bandage</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Remove embedded objects</li>
+            <li>Use dirty material</li>
+            <li>Leave patient alone</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#128147;</div>
+      <div class="priority-severity critical">CRITICAL</div>
+      <h3>Heart Attack</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Sit patient upright</li>
+            <li>Give aspirin if available</li>
+            <li>Loosen tight clothing</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Let patient walk alone</li>
+            <li>Give food or water</li>
+            <li>Leave patient unattended</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#129504;</div>
+      <div class="priority-severity critical">CRITICAL</div>
+      <h3>Stroke</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Use FAST test immediately</li>
+            <li>Keep patient comfortable</li>
+            <li>Note time of first symptoms</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Give food or medication</li>
+            <li>Let patient sleep it off</li>
+            <li>Delay calling ambulance</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#128663;</div>
+      <div class="priority-severity high">HIGH</div>
+      <h3>Accident Trauma</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Keep patient still</li>
+            <li>Control visible bleeding</li>
+            <li>Monitor consciousness</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Move neck or spine</li>
+            <li>Remove helmets hastily</li>
+            <li>Give water to unconscious</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#128293;</div>
+      <div class="priority-severity high">HIGH</div>
+      <h3>Burns</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Cool with running water 20min</li>
+            <li>Cover with clean dressing</li>
+            <li>Remove jewelry nearby</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Use ice or ice water</li>
+            <li>Break blisters</li>
+            <li>Apply creams or butter</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#129688;</div>
+      <div class="priority-severity critical">CRITICAL</div>
+      <h3>Breathing Difficulty</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Help patient sit upright</li>
+            <li>Loosen tight clothing</li>
+            <li>Use inhaler if available</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Let patient lie flat</li>
+            <li>Cause further panic</li>
+            <li>Delay calling help</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#9889;</div>
+      <div class="priority-severity high">HIGH</div>
+      <h3>Seizure</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Clear area of hazards</li>
+            <li>Cushion the head</li>
+            <li>Time the seizure duration</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Restrain the person</li>
+            <li>Put anything in mouth</li>
+            <li>Give water during seizure</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#129328;</div>
+      <div class="priority-severity critical">CRITICAL</div>
+      <h3>Pregnancy Emergency</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Keep patient calm and still</li>
+            <li>Lie on left side if possible</li>
+            <li>Note contraction frequency</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Delay calling ambulance</li>
+            <li>Give medications without advice</li>
+            <li>Cause additional stress</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+    <div class="priority-card">
+      <div class="priority-icon">&#127777;</div>
+      <div class="priority-severity moderate">MODERATE</div>
+      <h3>High Fever</h3>
+      <div class="do-dont">
+        <div class="do">
+          <h4>&#10003; Do</h4>
+          <ul>
+            <li>Apply cool wet cloths</li>
+            <li>Keep patient hydrated</li>
+            <li>Remove excess clothing</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h4>&#10007; Don't</h4>
+          <ul>
+            <li>Use very cold water</li>
+            <li>Over-bundle patient</li>
+            <li>Ignore temperature above 39°C</li>
+          </ul>
+        </div>
+      </div>
+      <button class="priority-action-btn" onclick="callEmergency()">Call Emergency Now</button>
+    </div>
+  </div>
+</section>
+
+<section class="workflow-section">
+  <div class="section-header">
+    <div class="section-tag">PROCESS</div>
+    <h2 class="section-title">Emergency Response Workflow</h2>
+    <p class="section-sub">AI-powered emergency coordination from detection to treatment</p>
+  </div>
+  <div class="workflow-timeline">
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#128680;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">01</div>
+        <h3>Emergency Detected</h3>
+        <p>Patient triggers emergency alert via AI system or manual input</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#129302;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">02</div>
+        <h3>AI Quick Assessment</h3>
+        <p>Juhi AI analyzes symptoms and generates emergency score in real-time</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#9888;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">03</div>
+        <h3>Priority Detection</h3>
+        <p>System assigns Critical, High, Moderate, or Low priority classification</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#129657;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">04</div>
+        <h3>First Aid Guidance</h3>
+        <p>Immediate AI-generated first aid instructions delivered to patient</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#128657;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">05</div>
+        <h3>Ambulance Matching</h3>
+        <p>Smart system selects optimal ambulance type based on emergency severity</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#127973;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">06</div>
+        <h3>Hospital Alert</h3>
+        <p>Nearest suitable hospital receives advance patient condition data</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node">
+        <div class="step-icon">&#128205;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">07</div>
+        <h3>Live Tracking</h3>
+        <p>Real-time GPS tracking shared with hospital and family members</p>
+      </div>
+      <div class="step-connector bottom"></div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-connector top"></div>
+      <div class="step-node active-step">
+        <div class="step-icon">&#128138;</div>
+        <div class="step-pulse"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-num">08</div>
+        <h3>Immediate Treatment</h3>
+        <p>Medical team pre-prepared with equipment for instant patient care</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ambulance-section" id="ambulanceSection">
+  <div class="section-header">
+    <div class="section-tag">DISPATCH</div>
+    <h2 class="section-title">Smart Ambulance Recommendation</h2>
+    <p class="section-sub">AI matches your emergency with the most suitable ambulance type</p>
+  </div>
+  <div class="ambulance-grid">
+    <div class="ambulance-card" id="amb_basic">
+      <div class="amb-icon">&#128657;</div>
+      <h3 class="amb-name">Basic Ambulance</h3>
+      <p class="amb-desc">Standard first response with basic life support equipment</p>
+      <div class="amb-features">
+        <span>First Aid Kit</span>
+        <span>Stretcher</span>
+        <span>Basic Monitoring</span>
+      </div>
+      <div class="amb-eta">ETA: 8-12 min</div>
+      <div class="amb-status available">Available</div>
+    </div>
+    <div class="ambulance-card" id="amb_oxygen">
+      <div class="amb-icon">&#128144;</div>
+      <h3 class="amb-name">Oxygen Ambulance</h3>
+      <p class="amb-desc">Equipped with oxygen tanks and respiratory support systems</p>
+      <div class="amb-features">
+        <span>O2 Cylinders</span>
+        <span>Nebulizer</span>
+        <span>Pulse Oximeter</span>
+      </div>
+      <div class="amb-eta">ETA: 6-10 min</div>
+      <div class="amb-status available">Available</div>
+    </div>
+    <div class="ambulance-card" id="amb_icu">
+      <div class="amb-icon">&#128203;</div>
+      <h3 class="amb-name">ICU Ambulance</h3>
+      <p class="amb-desc">Mobile intensive care with advanced life support equipment</p>
+      <div class="amb-features">
+        <span>Ventilator</span>
+        <span>Defibrillator</span>
+        <span>IV Drip Setup</span>
+      </div>
+      <div class="amb-eta">ETA: 5-8 min</div>
+      <div class="amb-status available">Available</div>
+    </div>
+    <div class="ambulance-card" id="amb_cardiac">
+      <div class="amb-icon">&#128147;</div>
+      <h3 class="amb-name">Cardiac Ambulance</h3>
+      <p class="amb-desc">Specialized cardiac care with 12-lead ECG and cardiac medications</p>
+      <div class="amb-features">
+        <span>12-Lead ECG</span>
+        <span>Thrombolytics</span>
+        <span>Cardiac Monitor</span>
+      </div>
+      <div class="amb-eta">ETA: 4-7 min</div>
+      <div class="amb-status available">Available</div>
+    </div>
+  </div>
+</section>
+
+<section class="hospital-section">
+  <div class="section-header">
+    <div class="section-tag">HOSPITAL STATUS</div>
+    <h2 class="section-title">Hospital Readiness Dashboard</h2>
+    <p class="section-sub">Live hospital capacity and resource availability</p>
+  </div>
+  <div class="hospital-grid">
+    <div class="hospital-stat-card">
+      <div class="hstat-icon">&#127973;</div>
+      <div class="hstat-info">
+        <div class="hstat-label">ICU Availability</div>
+        <div class="hstat-bar"><div class="hstat-fill" style="width:68%"></div></div>
+        <div class="hstat-value">68% <span class="hstat-sub">Available</span></div>
+      </div>
+    </div>
+    <div class="hospital-stat-card">
+      <div class="hstat-icon">&#128144;</div>
+      <div class="hstat-info">
+        <div class="hstat-label">Oxygen Support</div>
+        <div class="hstat-bar"><div class="hstat-fill" style="width:85%"></div></div>
+        <div class="hstat-value">85% <span class="hstat-sub">Capacity</span></div>
+      </div>
+    </div>
+    <div class="hospital-stat-card">
+      <div class="hstat-icon">&#129656;</div>
+      <div class="hstat-info">
+        <div class="hstat-label">Blood Availability</div>
+        <div class="hstat-bar"><div class="hstat-fill" style="width:72%"></div></div>
+        <div class="hstat-value">72% <span class="hstat-sub">Stocked</span></div>
+      </div>
+    </div>
+    <div class="hospital-stat-card">
+      <div class="hstat-icon">&#9989;</div>
+      <div class="hstat-info">
+        <div class="hstat-label">Emergency Acceptance</div>
+        <div class="hstat-bar"><div class="hstat-fill green" style="width:100%"></div></div>
+        <div class="hstat-value">OPEN <span class="hstat-sub">24/7</span></div>
+      </div>
+    </div>
+    <div class="hospital-stat-card">
+      <div class="hstat-icon">&#128658;</div>
+      <div class="hstat-info">
+        <div class="hstat-label">Estimated Arrival Time</div>
+        <div class="hstat-value large" id="etaDisplay">6-10 min</div>
+        <div class="eta-pulse-dot"></div>
+      </div>
+    </div>
+    <div class="hospital-stat-card readiness-score">
+      <div class="hstat-icon">&#11088;</div>
+      <div class="hstat-info">
+        <div class="hstat-label">Hospital Readiness Score</div>
+        <div class="readiness-num">94<span>/100</span></div>
+        <div class="readiness-bar"><div class="readiness-fill" style="width:94%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="summary-section" id="summarySection" style="display:none">
+  <div class="section-header">
+    <div class="section-tag">SUMMARY</div>
+    <h2 class="section-title">Emergency Assessment Summary</h2>
+    <p class="section-sub">Complete AI-generated emergency response plan</p>
+  </div>
+  <div class="summary-card" id="summaryCard">
+    <div class="summary-grid" id="summaryGrid"></div>
+  </div>
+  <div class="action-buttons">
+    <button class="action-btn book-btn" onclick="bookAmbulance()">
+      <span>&#128657;</span> Book Ambulance
+    </button>
+    <button class="action-btn call-btn" onclick="callEmergency()">
+      <span>&#128222;</span> Call Emergency
+    </button>
+    <button class="action-btn location-btn" onclick="shareLocation()">
+      <span>&#128205;</span> Share Location
+    </button>
+    <button class="action-btn family-btn" onclick="contactFamily()">
+      <span>&#128106;</span> Contact Family
+    </button>
+    <button class="action-btn nav-btn" onclick="startNavigation()">
+      <span>&#128663;</span> Start Navigation
+    </button>
+  </div>
+</section>
+
+<div class="chat-bubble" id="chatBubble" onclick="toggleChat()">
+  <div class="bubble-avatar">&#129302;</div>
+  <div class="bubble-badge">1</div>
+  <div class="bubble-pulse"></div>
+</div>
+
+<div class="chatbot-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-avatar-wrap">
+      <div class="chat-avatar">&#129302;</div>
+      <div class="chat-online-dot"></div>
+    </div>
+    <div class="chat-info">
+      <div class="chat-name">Juhi AI</div>
+      <div class="chat-status">Emergency Assistant · Online</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">&#10005;</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot-msg">
+      <div class="msg-avatar">&#129302;</div>
+      <div class="msg-bubble">
+        Hello! I'm <strong>Juhi</strong>, your AI Emergency Assistant. Describe your emergency symptoms and I'll provide instant guidance. What's your emergency? &#128680;
+      </div>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <button onclick="quickChat('chest pain')">Chest Pain</button>
+    <button onclick="quickChat('bleeding')">Bleeding</button>
+    <button onclick="quickChat('accident')">Accident</button>
+    <button onclick="quickChat('breathing problem')">Breathing</button>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Describe your emergency..." onkeypress="handleChatKey(event)">
+    <button class="voice-btn" onclick="voiceInput()">&#127908;</button>
+    <button class="send-btn" onclick="sendChat()">&#10148;</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
